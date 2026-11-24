@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monitor de Preços — Notebooks Gamer & PC Gamer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            brandDark: '#211915',
+            brandDeep: '#181311',
+            brandCard: '#2A211D',
+            brandElevated: '#332925',
+            brandBorder: '#463C38',
+            brandMuted: '#A8A29E',
+            brandLightGray: '#D6D3D1',
+            brandRed: '#CC0000',
+            brandRedAlt: '#BF2117',
+            brandRedDark: '#990000',
+            brandRedBright: '#FF4D4D',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #211915;
+      color: #FFFFFF;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #181311;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #463C38;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #5C504B;
+    }
+
+    .sparkline-path {
+      fill: none;
+      stroke: #D6D3D1;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sparkline-path-alert {
+      fill: none;
+      stroke: #FF4D4D;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .badge-verified {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #E7E5E4;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .badge-trusted {
+      background-color: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .badge-spec {
+      background-color: #181311;
+      color: #E7E5E4;
+      border: 1px solid #463C38;
+    }
+
+    .badge-coupon {
+      background-color: rgba(204, 0, 0, 0.18);
+      color: #FCA5A5;
+      border: 1px solid rgba(204, 0, 0, 0.45);
+    }
+
+    .badge-drop-alert {
+      background-color: #CC0000;
+      color: #FFFFFF;
+      border: 1px solid #FF4D4D;
+      box-shadow: 0 0 14px rgba(204, 0, 0, 0.45);
+    }
+
+    .card-drop-alert {
+      background: linear-gradient(145deg, rgba(204, 0, 0, 0.24) 0%, #2A211D 70%);
+      border-color: #CC0000 !important;
+      box-shadow: 0 0 0 1px rgba(204, 0, 0, 0.45), 0 10px 25px -8px rgba(204, 0, 0, 0.35);
+    }
+
+    .row-drop-alert {
+      background: linear-gradient(90deg, rgba(204, 0, 0, 0.24) 0%, rgba(42, 33, 29, 0.92) 100%);
+      border-left: 4px solid #CC0000;
+    }
+
+    /* Multi-select Filter Chip Buttons */
+    .chip-btn {
+      background-color: #181311;
+      color: #D6D3D1;
+      border: 1px solid #463C38;
+      transition: all 0.15s ease;
+    }
+    .chip-btn:hover {
+      border-color: #A8A29E;
+      color: #FFFFFF;
+    }
+    .chip-btn.active {
+      background-color: #CC0000;
+      color: #FFFFFF;
+      border-color: #FF4D4D;
+      box-shadow: 0 0 0 1px rgba(255, 77, 77, 0.35);
+      font-weight: 700;
+    }
+
+    /* Custom Range Slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: #463C38;
+      height: 6px;
+      border-radius: 999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -5px;
+      background-color: #CC0000;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.45);
+    }
+
+    @keyframes pulseRed {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(1.15); }
+    }
+    .animate-live-dot {
+      animation: pulseRed 1.8s infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+
+  <div class="max-w-7xl mx-auto space-y-5">
+
+    <!-- HEADER -->
+    <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+      <div>
+        <div class="flex flex-wrap items-center gap-2.5 mb-1">
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Monitor de Preços — Notebooks Gamer & PC Gamer
+          </h1>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#CC0000]/20 text-[#FCA5A5] border border-[#CC0000]/50">
+            <span class="w-2 h-2 rounded-full bg-[#FF4D4D] animate-live-dot"></span>
+            Histórico até 30d ativo
+          </span>
+        </div>
+        <p id="last-updated-text" class="text-sm text-[#A8A29E]">
+          24/11/2026 às 18:03 · 9 lojas oficiais e varejistas conceituados monitorados · preço à vista no Pix
+        </p>
+      </div>
+
+      <!-- Top Window Selector & Controls -->
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Lookback Window Selector (7, 15, 21, 30 days) -->
+        <div class="inline-flex items-center rounded-xl bg-[#181311] p-1 border border-[#463C38]" role="group" aria-label="Janela de comparação">
+          <span class="text-[11px] font-semibold text-[#A8A29E] px-2 hidden sm:inline">Janela:</span>
+          <button onclick="setLookbackDays(7)" id="win-top-7" class="win-top-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#A8A29E] hover:text-white transition">7d</button>
+          <button onclick="setLookbackDays(15)" id="win-top-15" class="win-top-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#A8A29E] hover:text-white transition">15d</button>
+          <button onclick="setLookbackDays(21)" id="win-top-21" class="win-top-btn px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#A8A29E] hover:text-white transition">21d</button>
+          <button onclick="setLookbackDays(30)" id="win-top-30" class="win-top-btn px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#CC0000] text-white transition">30d</button>
+        </div>
+
+        <button onclick="openMemoryModal()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#2A211D] text-white border border-[#463C38] hover:border-[#A8A29E] transition">
+          <svg class="w-4 h-4 text-[#FF4D4D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Memória 30d
+        </button>
+
+        <button onclick="scrollToConsultant()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#2A211D] text-white border border-[#463C38] hover:border-[#CC0000] transition">
+          <svg class="w-4 h-4 text-[#FF4D4D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          Consultor IA
+        </button>
+
+        <button onclick="simulateLiveScan()" id="btn-refresh" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white border border-[#FF4D4D]/40 shadow-lg shadow-[#CC0000]/25 transition">
+          <svg id="refresh-icon" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Simular Nova Coleta
+        </button>
+      </div>
+    </header>
+
+    <!-- 1. TOP FLASH OPPORTUNITIES ALERT BANNER (QUEDAS >= 10%) -->
+    <section id="flash-opportunities-section" class="bg-gradient-to-r from-[#CC0000]/35 via-[#2A211D] to-[#2A211D] border-2 border-[#CC0000] rounded-xl p-4 sm:p-5 shadow-2xl shadow-[#CC0000]/20">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3.5">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-extrabold uppercase tracking-wider bg-[#CC0000] text-white shadow">
+            <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+            OPORTUNIDADES RELÂMPAGO · QUEDA ≥ 10%
+          </span>
+          <h2 id="flash-banner-title" class="text-sm sm:text-base font-extrabold text-white tracking-tight">
+            Ofertas que romperam o menor preço dos últimos 30 dias em 10% ou mais
+          </h2>
+        </div>
+
+        <button onclick="toggleOnlyMajorDrops()" id="btn-isolate-drops" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white border border-[#FF4D4D]/40 transition">
+          Filtrar apenas estas ofertas
+        </button>
+      </div>
+
+      <div id="flash-opportunities-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- 2. PROMINENT MULTI-SELECT TECHNICAL HARDWARE FILTER PANEL -->
+    <section id="filter-panel" class="bg-[#2A211D] border-2 border-[#463C38] rounded-xl p-4 sm:p-5 space-y-4 shadow-xl">
+      <!-- Top Bar of Filter Panel -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#463C38] pb-3.5">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#CC0000] text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+          </span>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-sm sm:text-base font-extrabold uppercase tracking-wide text-white">
+                Filtros Multi-Seleção de Hardware
+              </h2>
+              <span id="total-matched-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#181311] text-white border border-[#CC0000]/60">
+                18 ofertas compatíveis
+              </span>
+            </div>
+            <p class="text-xs text-[#D6D3D1]">
+              Clique em <strong class="text-white">múltiplas opções</strong> ao mesmo tempo dentro de cada categoria (ex: <span class="text-[#FCA5A5]">16GB + 32GB</span> ou <span class="text-[#FCA5A5]">RTX 4060 + RTX 4070</span>).
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Lookback Selector synced inside filter bar -->
+          <div class="flex items-center gap-1.5 bg-[#181311] border border-[#463C38] rounded-lg px-2.5 py-1.5 text-xs">
+            <span class="text-[#A8A29E] font-medium">Comparar com:</span>
+            <select id="filter-lookback-select" onchange="setLookbackDays(Number(this.value))" class="bg-transparent text-white font-bold focus:outline-none cursor-pointer">
+              <option value="7" class="bg-[#181311]">Últimos 7 dias</option>
+              <option value="15" class="bg-[#181311]">Últimos 15 dias</option>
+              <option value="21" class="bg-[#181311]">Últimos 21 dias</option>
+              <option value="30" selected class="bg-[#181311]">Últimos 30 dias</option>
+            </select>
+          </div>
+
+          <button onclick="resetAllFilters()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#332925] hover:bg-[#463C38] text-white border border-[#463C38] transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            Limpar filtros
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 1: Text Search + Max Budget Slider + Anti-Scam Trusted Retailers Toggle -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
+        <!-- Search Input (5 cols) -->
+        <div class="lg:col-span-5 bg-[#181311] border border-[#463C38] rounded-xl p-3 flex flex-col justify-between">
+          <label for="filter-search" class="block text-[11px] font-bold uppercase tracking-wider text-[#A8A29E] mb-1.5">
+            Busca rápida por modelo, marca ou loja
+          </label>
+          <div class="relative">
+            <svg class="w-4 h-4 text-[#A8A29E] absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input
+              type="text"
+              id="filter-search"
+              oninput="applyAllFilters()"
+              placeholder="Ex: Lenovo LOQ, Nitro V15, Legion, Ryzen 5700X3D, KaBuM..."
+              class="w-full bg-[#211915] border border-[#463C38] focus:border-[#CC0000] focus:outline-none rounded-lg pl-9 pr-3 py-2 text-xs sm:text-sm text-white placeholder-[#736B68]"
+            />
+          </div>
+        </div>
+
+        <!-- Budget Slider (4 cols) -->
+        <div class="lg:col-span-4 bg-[#181311] border border-[#463C38] rounded-xl p-3 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="text-[#A8A29E] font-bold uppercase tracking-wider text-[11px]">Orçamento Máximo (Pix)</span>
+            <span id="price-slider-label" class="font-extrabold text-white text-sm">Até R$ 15.000+</span>
+          </div>
+          <input
+            type="range"
+            id="filter-max-price"
+            min="3500"
+            max="15000"
+            step="250"
+            value="15000"
+            oninput="updatePriceLabel(); applyAllFilters()"
+            class="w-full my-1"
+          />
+          <div class="flex justify-between text-[10px] text-[#A8A29E]">
+            <span>R$ 3.500</span>
+            <span>R$ 7.500</span>
+            <span>R$ 11.000</span>
+            <span>R$ 15.000+</span>
+          </div>
+        </div>
+
+        <!-- Anti-Scam Trusted Retailers Guard (3 cols) -->
+        <div class="lg:col-span-3 bg-[#181311] border border-[#463C38] rounded-xl p-3 flex flex-col justify-between">
+          <label class="flex items-start gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              id="filter-anti-scam"
+              checked
+              onchange="applyAllFilters()"
+              class="mt-0.5 accent-[#CC0000] w-4 h-4 rounded shrink-0"
+            />
+            <div>
+              <span class="block text-xs font-bold text-white leading-snug">
+                Somente lojas oficiais e varejistas conceituados (anti-golpe)
+              </span>
+              <span class="block text-[11px] text-[#A8A29E] mt-0.5">
+                Bloqueia terceiros desconhecidos sem histórico verificado.
+              </span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Row 2: Multi-Select Category Chips Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
+
+        <!-- Group 1: Categoria -->
+        <div class="bg-[#181311] border border-[#463C38] rounded-xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#A8A29E]">Categoria (Multi-seleção)</span>
+            <span id="count-category" class="text-[11px] font-bold text-[#FCA5A5]"></span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" data-filter-group="category">
+            <button type="button" onclick="toggleMultiFilter('category', 'notebook')" data-val="notebook" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">Notebook Gamer</button>
+            <button type="button" onclick="toggleMultiFilter('category', 'pc')" data-val="pc" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">PC Gamer Montado</button>
+          </div>
+        </div>
+
+        <!-- Group 2: Memória RAM -->
+        <div class="bg-[#181311] border border-[#463C38] rounded-xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#A8A29E]">Memória RAM (Marque 1 ou mais)</span>
+            <span id="count-ram" class="text-[11px] font-bold text-[#FCA5A5]"></span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" data-filter-group="ram">
+            <button type="button" onclick="toggleMultiFilter('ram', '8GB')" data-val="8GB" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">8GB</button>
+            <button type="button" onclick="toggleMultiFilter('ram', '16GB')" data-val="16GB" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">16GB</button>
+            <button type="button" onclick="toggleMultiFilter('ram', '32GB')" data-val="32GB" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">32GB</button>
+          </div>
+        </div>
+
+        <!-- Group 3: Armazenamento SSD NVMe -->
+        <div class="bg-[#181311] border border-[#463C38] rounded-xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#A8A29E]">Armazenamento SSD NVMe</span>
+            <span id="count-ssd" class="text-[11px] font-bold text-[#FCA5A5]"></span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" data-filter-group="ssd">
+            <button type="button" onclick="toggleMultiFilter('ssd', '512GB')" data-val="512GB" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">512GB</button>
+            <button type="button" onclick="toggleMultiFilter('ssd', '1TB')" data-val="1TB" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">1TB</button>
+            <button type="button" onclick="toggleMultiFilter('ssd', '2TB')" data-val="2TB" class="chip-btn px-3 py-1.5 rounded-lg text-xs font-medium">2TB</button>
+          </div>
+        </div>
+
+        <!-- Group 4: Placa de Vídeo (GPU) -->
+        <div class="bg-[#181311] border border-[#463C38] rounded-xl p-3 md:col-span-2 xl:col-span-2">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#A8A29E]">Placa de Vídeo / GPU (Combine modelos)</span>
+            <span id="count-gpu" class="text-[11px] font-bold text-[#FCA5A5]"></span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" data-filter-group="gpu">
+            <button type="button" onclick="toggleMultiFilter('gpu', 'RTX 3050')" data-val="RTX 3050" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">RTX 3050</button>
+            <button type="button" onclick="toggleMultiFilter('gpu', 'RTX 4050')" data-val="RTX 4050" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">RTX 4050</button>
+            <button type="button" onclick="toggleMultiFilter('gpu', 'RTX 4060')" data-val="RTX 4060" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">RTX 4060</button>
+            <button type="button" onclick="toggleMultiFilter('gpu', 'RTX 4070')" data-val="RTX 4070" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">RTX 4070</button>
+            <button type="button" onclick="toggleMultiFilter('gpu', 'RTX 5070')" data-val="RTX 5070" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">RTX 5070</button>
+            <button type="button" onclick="toggleMultiFilter('gpu', 'RX 7600')" data-val="RX 7600" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">RX 7600</button>
+            <button type="button" onclick="toggleMultiFilter('gpu', 'RX 7700 XT')" data-val="RX 7700 XT" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">RX 7700 XT</button>
+          </div>
+        </div>
+
+        <!-- Group 5: Processador (CPU) -->
+        <div class="bg-[#181311] border border-[#463C38] rounded-xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#A8A29E]">Processador / CPU</span>
+            <span id="count-cpu" class="text-[11px] font-bold text-[#FCA5A5]"></span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" data-filter-group="cpu">
+            <button type="button" onclick="toggleMultiFilter('cpu', 'Core i5')" data-val="Core i5" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Core i5</button>
+            <button type="button" onclick="toggleMultiFilter('cpu', 'Core i7 / Ultra 7')" data-val="Core i7 / Ultra 7" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Core i7 / Ultra 7</button>
+            <button type="button" onclick="toggleMultiFilter('cpu', 'Ryzen 5')" data-val="Ryzen 5" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Ryzen 5</button>
+            <button type="button" onclick="toggleMultiFilter('cpu', 'Ryzen 7')" data-val="Ryzen 7" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Ryzen 7</button>
+          </div>
+        </div>
+
+        <!-- Group 6: Tela / Refrigeração -->
+        <div class="bg-[#181311] border border-[#463C38] rounded-xl p-3 md:col-span-2">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#A8A29E]">Tela (Notebook) / Refrigeração (PC)</span>
+            <span id="count-extra" class="text-[11px] font-bold text-[#FCA5A5]"></span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" data-filter-group="extra">
+            <button type="button" onclick="toggleMultiFilter('extra', '144Hz/165Hz IPS')" data-val="144Hz/165Hz IPS" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">144Hz/165Hz IPS</button>
+            <button type="button" onclick="toggleMultiFilter('extra', '240Hz QHD/OLED')" data-val="240Hz QHD/OLED" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">240Hz QHD/OLED</button>
+            <button type="button" onclick="toggleMultiFilter('extra', 'Water Cooler')" data-val="Water Cooler" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Water Cooler</button>
+            <button type="button" onclick="toggleMultiFilter('extra', 'Air Cooler')" data-val="Air Cooler" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Air Cooler</button>
+          </div>
+        </div>
+
+        <!-- Group 7: Alertas & Status -->
+        <div class="bg-[#181311] border border-[#463C38] rounded-xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#A8A29E]">Alertas & Status</span>
+            <span id="count-status" class="text-[11px] font-bold text-[#FCA5A5]"></span>
+          </div>
+          <div class="flex flex-wrap gap-1.5" data-filter-group="status">
+            <button type="button" onclick="toggleMultiFilter('status', 'drop10')" data-val="drop10" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Apenas quedas ≥ 10%</button>
+            <button type="button" onclick="toggleMultiFilter('status', 'coupon')" data-val="coupon" class="chip-btn px-2.5 py-1.5 rounded-lg text-xs font-medium">Com Cupom Ativo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Removable Filter Pills -->
+      <div id="active-filter-pills" class="hidden flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#463C38]/70"></div>
+    </section>
+
+    <!-- 3. SUMMARY BLOCK ("RESUMO: O MAIS BARATO DE CADA CATEGORIA") -->
+    <section class="bg-[#2A211D] border border-[#463C38] rounded-xl p-5 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+        <h2 class="text-xs font-bold tracking-wider uppercase text-[#A8A29E]">
+          RESUMO: O MAIS BARATO DE CADA CATEGORIA (FILTRADO)
+        </h2>
+        <span id="summary-window-caption" class="text-[11px] text-[#D6D3D1]">
+          Comparando preço atual (Pix) vs menor valor nos últimos 30 dias
+        </span>
+      </div>
+
+      <div id="dynamic-summary-list" class="space-y-2.5 text-sm sm:text-[15px] leading-relaxed">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <p class="mt-4 pt-3 border-t border-[#463C38]/70 text-xs text-[#A8A29E]">
+        Preços e cupons oscilam ao longo do dia. Clique em <strong class="text-white">"Ir para loja ↗"</strong> para conferir disponibilidade e aplicar cupons no carrinho.
+      </p>
+    </section>
+
+    <!-- 4. COMPARISON HIGHLIGHT CARDS WITH SVG SPARKLINES -->
+    <div id="highlight-tiers-container" class="space-y-5">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+    <!-- 5. EXPANDABLE FULL OFFER TABLE 1: NOTEBOOKS GAMER -->
+    <section id="table-notebooks" class="bg-[#2A211D] border border-[#463C38] rounded-xl overflow-hidden">
+      <button onclick="toggleAccordion('notebooks-body', 'notebooks-chevron')" class="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-[#332925] transition">
+        <div class="flex items-center gap-2">
+          <span id="notebooks-chevron" class="text-[#FF4D4D] text-xs transition-transform duration-200">▼</span>
+          <span class="text-sm sm:text-base font-extrabold text-white">
+            Todas as ofertas — Notebooks Gamer (<span id="notebooks-count">0</span>)
+          </span>
+        </div>
+        <span class="text-xs text-[#A8A29E] hidden sm:inline">ordenado pelo menor preço à vista no Pix</span>
+      </button>
+
+      <div id="notebooks-body" class="border-t border-[#463C38] overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[920px]">
+          <thead>
+            <tr class="border-b border-[#463C38] text-[11px] font-bold text-[#A8A29E] uppercase tracking-wider bg-[#181311]">
+              <th class="py-3 px-5 w-40">Loja Conceituada</th>
+              <th class="py-3 px-4">Notebook Gamer & Hardware</th>
+              <th id="th-nb-low" class="py-3 px-4 text-right w-40">Menor (30d)</th>
+              <th class="py-3 px-4 text-right w-40">Preço Atual (Pix)</th>
+              <th class="py-3 px-5 text-right w-40">Ação / Link</th>
+            </tr>
+          </thead>
+          <tbody id="notebooks-tbody" class="divide-y divide-[#463C38]/70 text-xs sm:text-sm">
+            <!-- Populated dynamically by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. EXPANDABLE FULL OFFER TABLE 2: PCs GAMER MONTADOS -->
+    <section id="table-pcs" class="bg-[#2A211D] border border-[#463C38] rounded-xl overflow-hidden">
+      <button onclick="toggleAccordion('pcs-body', 'pcs-chevron')" class="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-[#332925] transition">
+        <div class="flex items-center gap-2">
+          <span id="pcs-chevron" class="text-[#FF4D4D] text-xs transition-transform duration-200">▼</span>
+          <span class="text-sm sm:text-base font-extrabold text-white">
+            Todas as ofertas — PCs Gamer Montados (<span id="pcs-count">0</span>)
+          </span>
+        </div>
+        <span class="text-xs text-[#A8A29E] hidden sm:inline">ordenado pelo menor preço à vista no Pix</span>
+      </button>
+
+      <div id="pcs-body" class="border-t border-[#463C38] overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[920px]">
+          <thead>
+            <tr class="border-b border-[#463C38] text-[11px] font-bold text-[#A8A29E] uppercase tracking-wider bg-[#181311]">
+              <th class="py-3 px-5 w-40">Loja Conceituada</th>
+              <th class="py-3 px-4">PC Gamer Montado & Hardware</th>
+              <th id="th-pc-low" class="py-3 px-4 text-right w-40">Menor (30d)</th>
+              <th class="py-3 px-4 text-right w-40">Preço Atual (Pix)</th>
+              <th class="py-3 px-5 text-right w-40">Ação / Link</th>
+            </tr>
+          </thead>
+          <tbody id="pcs-tbody" class="divide-y divide-[#463C38]/70 text-xs sm:text-sm">
+            <!-- Populated dynamically by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. ACTIVE COUPONS & AI PURCHASE CONSULTANT -->
+    <section id="ai-consultant-section" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+      <!-- Left: Verified Coupons (5 cols) -->
+      <div class="lg:col-span-5 bg-[#2A211D] border border-[#463C38] rounded-xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+            <h3 class="text-sm sm:text-base font-extrabold text-white">Cupons ativos verificados</h3>
+            <span class="text-[11px] text-[#A8A29E]">aplicáveis no carrinho</span>
+          </div>
+
+          <div class="space-y-2.5">
+            <div class="bg-[#181311] border border-[#463C38] rounded-lg p-3 flex items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold text-xs text-white bg-[#CC0000] px-2 py-0.5 rounded">LOQ10OFF</span>
+                  <span class="text-xs font-bold text-white">KaBuM!</span>
+                </div>
+                <p class="text-xs text-[#A8A29E] mt-1">10% OFF na linha Lenovo LOQ Gamer (RTX 4050 e RTX 4060)</p>
+              </div>
+              <button onclick="copyCoupon('LOQ10OFF')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#332925] hover:bg-[#463C38] text-white transition shrink-0">
+                Copiar
+              </button>
+            </div>
+
+            <div class="bg-[#181311] border border-[#463C38] rounded-lg p-3 flex items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold text-xs text-white bg-[#CC0000] px-2 py-0.5 rounded">AMIGOLENOVO</span>
+                  <span class="text-xs font-bold text-white">Lenovo Brasil</span>
+                </div>
+                <p class="text-xs text-[#A8A29E] mt-1">Até R$ 800 OFF em notebooks Lenovo Legion e LOQ</p>
+              </div>
+              <button onclick="copyCoupon('AMIGOLENOVO')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#332925] hover:bg-[#463C38] text-white transition shrink-0">
+                Copiar
+              </button>
+            </div>
+
+            <div class="bg-[#181311] border border-[#463C38] rounded-lg p-3 flex items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold text-xs text-white bg-[#CC0000] px-2 py-0.5 rounded">BLACKMARI</span>
+                  <span class="text-xs font-bold text-white">Acer Store</span>
+                </div>
+                <p class="text-xs text-[#A8A29E] mt-1">R$ 300 OFF em modelos Acer Nitro V15 e Predator Helios Neo</p>
+              </div>
+              <button onclick="copyCoupon('BLACKMARI')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#332925] hover:bg-[#463C38] text-white transition shrink-0">
+                Copiar
+              </button>
+            </div>
+
+            <div class="bg-[#181311] border border-[#463C38] rounded-lg p-3 flex items-center justify-between gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold text-xs text-white bg-[#CC0000] px-2 py-0.5 rounded">GAMER5PIX</span>
+                  <span class="text-xs font-bold text-white">Terabyteshop</span>
+                </div>
+                <p class="text-xs text-[#A8A29E] mt-1">5% OFF adicional em PCs Gamer montados com placa RTX/RX</p>
+              </div>
+              <button onclick="copyCoupon('GAMER5PIX')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#332925] hover:bg-[#463C38] text-white transition shrink-0">
+                Copiar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-[#A8A29E] mt-3 pt-2.5 border-t border-[#463C38]/70">
+          Dica: Copie o cupom antes de clicar em <strong class="text-white">"Ir para loja ↗"</strong>.
+        </p>
+      </div>
+
+      <!-- Right: AI Purchase Consultant (7 cols) -->
+      <div class="lg:col-span-7 bg-[#2A211D] border border-[#463C38] rounded-xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#CC0000]"></span>
+              <h3 class="text-sm sm:text-base font-extrabold text-white">Consultor Técnico de Compra (IA)</h3>
+            </div>
+            <span id="consultant-context-badge" class="text-[11px] text-[#D6D3D1] bg-[#181311] px-2.5 py-0.5 rounded-full border border-[#463C38]">
+              Analisando 18 ofertas filtradas (janela 30d)
+            </span>
+          </div>
+          <p class="text-xs text-[#A8A29E] mb-3">
+            Clique em <strong class="text-white">"✦ Analisar custo-benefício"</strong> em qualquer oferta para avaliar gargalo entre CPU/GPU, folga térmica, upgrade de RAM e se a queda sobre o piso de <strong id="consultant-win-label" class="text-white">30 dias</strong> torna a compra imediata.
+          </p>
+
+          <!-- Quick Prompts -->
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <button onclick="setPrompt('Analise as ofertas com queda maior ou igual a 10% no período selecionado e diga qual é a melhor compra imediata.')" class="text-[11px] bg-[#CC0000]/20 hover:bg-[#CC0000]/35 text-white border border-[#CC0000]/50 px-2.5 py-1 rounded-lg transition font-semibold">
+              Avaliar quedas ≥ 10%
+            </button>
+            <button onclick="setPrompt('Compare as 2 ofertas mais baratas nos meus filtros atuais: avalie gargalos, RAM e upgrade futuro.')" class="text-[11px] bg-[#181311] hover:bg-[#332925] text-[#D6D3D1] border border-[#463C38] px-2.5 py-1 rounded-lg transition">
+              Comparar Top 2 filtrados
+            </button>
+            <button onclick="setPrompt('Vale mais a pena pegar um Notebook Gamer RTX 4060 ou um PC Gamer Montado na mesma faixa de preço hoje?')" class="text-[11px] bg-[#181311] hover:bg-[#332925] text-[#D6D3D1] border border-[#463C38] px-2.5 py-1 rounded-lg transition">
+              Notebook RTX 4060 vs PC Gamer
+            </button>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              id="consultant-input"
+              onkeydown="if(event.key==='Enter') askConsultant()"
+              placeholder="Pergunte sobre gargalos, upgrades de RAM/SSD ou compare modelos..."
+              class="flex-1 bg-[#181311] border border-[#463C38] focus:border-[#CC0000] focus:outline-none rounded-lg px-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-[#736B68]"
+            />
+            <button
+              onclick="askConsultant()"
+              id="btn-ask-ai"
+              class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition shrink-0"
+            >
+              Consultar IA
+            </button>
+          </div>
+
+          <!-- Response Area -->
+          <div id="consultant-output" class="mt-3.5 bg-[#181311] border border-[#463C38] rounded-lg p-3.5 text-xs sm:text-sm text-[#E7E5E4] leading-relaxed min-h-[125px]">
+            <span class="text-[#FF4D4D] font-bold">Resumo técnico automático (janela de 30 dias):</span><br/>
+            • <strong>Lenovo LOQ 15IRX9 (Core i5-13450HX / 16GB DDR5 / RTX 4050 105W):</strong> Caiu de R$ 6.379,00 (menor preço em 30d) para <strong>R$ 5.579,10</strong> na <strong>KaBuM!</strong> com cupom <code class="text-[#FCA5A5]">LOQ10OFF</code> (<strong class="text-[#FF4D4D]">-12,5%</strong>). Sem gargalo e já vem com 16GB em dual-channel.<br/>
+            • <strong>PC Gamer Ryzen 5 5600 + RTX 4060 8GB:</strong> Caiu de R$ 6.599,00 para <strong>R$ 5.859,00</strong> na <strong>KaBuM!</strong> (<strong class="text-[#FF4D4D]">-11,2%</strong>), ótimo equilíbrio para Full HD Ultra.
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- FOOTER: VETTED RETAILERS & ANTI-SCAM POLICY -->
+    <footer class="bg-[#181311] border border-[#463C38] rounded-xl p-4 sm:p-5 text-xs text-[#A8A29E] leading-relaxed space-y-2">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-[#CC0000]/20 text-[#FCA5A5] border border-[#CC0000]/40 font-bold text-[11px]">
+          ESCUDO ANTI-GOLPE ATIVO
+        </span>
+        <strong class="text-white">Lojas homologadas e conceituadas consideradas nesta pesquisa:</strong>
+        <span>KaBuM!, Amazon Brasil, Pichau, Terabyteshop, Magalu, Fast Shop, Dell Brasil, Lenovo Brasil e Acer Store.</span>
+      </div>
+      <p>
+        <strong class="text-white">Política de segurança e leitura:</strong> Para evitar anúncios falsos, sites clones ou vendedores terceiros sem reputação, o monitor considera apenas lojas oficiais de fabricantes e grandes varejistas nacionais consolidados. O histórico guarda o menor valor diário dos últimos <strong class="text-white">30 dias</strong>; qualquer queda <strong class="text-[#FF4D4D]">≥ 10%</strong> sobre o menor preço da janela selecionada (7d, 15d, 21d ou 30d) recebe destaque vermelho imediato no topo da tela.
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- MODAL: VER PRINT / EVIDÊNCIA DE COLETA -->
+  <div id="snapshot-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this) closeSnapshotModal()">
+    <div class="bg-[#2A211D] border border-[#463C38] rounded-xl max-w-lg w-full p-5 shadow-2xl">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-white">✓ Evidência de Coleta Verificada</span>
+        <button onclick="closeSnapshotModal()" class="text-[#A8A29E] hover:text-white text-xl leading-none">&times;</button>
+      </div>
+      <div class="bg-[#181311] border border-[#463C38] rounded-lg p-4 space-y-2.5 text-xs sm:text-sm">
+        <div class="flex justify-between text-[#A8A29E]">
+          <span>Loja homologada:</span>
+          <span id="modal-store" class="text-white font-bold"></span>
+        </div>
+        <div class="flex justify-between text-[#A8A29E]">
+          <span id="modal-window-label">Menor preço na janela (30d):</span>
+          <span id="modal-period-low" class="text-[#D6D3D1] font-semibold"></span>
+        </div>
+        <div class="flex justify-between text-[#A8A29E]">
+          <span>Preço capturado agora (Pix):</span>
+          <span id="modal-price" class="text-white font-extrabold text-base"></span>
+        </div>
+        <div class="flex justify-between text-[#A8A29E]">
+          <span>Variação vs piso do período:</span>
+          <span id="modal-drop-badge" class="font-bold"></span>
+        </div>
+        <div class="flex justify-between text-[#A8A29E]">
+          <span>Parcelamento:</span>
+          <span id="modal-installments" class="text-[#D6D3D1]"></span>
+        </div>
+        <div class="pt-2.5 border-t border-[#463C38]">
+          <p id="modal-title" class="text-white font-semibold mb-1.5"></p>
+          <p id="modal-notes" class="text-xs text-[#A8A29E]"></p>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <a id="modal-store-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition">
+          Ir para loja ↗
+        </a>
+        <button onclick="closeSnapshotModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-[#332925] hover:bg-[#463C38] text-white transition">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MEMÓRIA DE PREÇOS 30 DIAS -->
+  <div id="memory-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this) closeMemoryModal()">
+    <div class="bg-[#2A211D] border border-[#463C38] rounded-xl max-w-3xl w-full p-5 shadow-2xl max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between gap-2 pb-3 border-b border-[#463C38]">
+        <div>
+          <h3 class="text-base font-extrabold text-white">Memória Histórica de Preços (7d / 15d / 21d / 30d)</h3>
+          <p class="text-xs text-[#A8A29E]">Persistida localmente no navegador. Quedas ≥ 10% sobre o piso do período selecionado ativam o alerta vermelho.</p>
+        </div>
+        <button onclick="closeMemoryModal()" class="text-[#A8A29E] hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+
+      <div id="memory-modal-list" class="overflow-y-auto my-3 divide-y divide-[#463C38]/70 text-xs">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="pt-3 border-t border-[#463C38] flex flex-wrap items-center justify-between gap-2">
+        <button onclick="resetPriceMemory()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-[#181311] hover:bg-[#332925] text-[#D6D3D1] border border-[#463C38] transition">
+          Resetar memória para padrão
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="simulateLiveScan(); closeMemoryModal();" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition">
+            Simular Nova Queda ≥ 10%
+          </button>
+          <button onclick="closeMemoryModal()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-[#332925] text-white">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-[#181311] border border-[#CC0000] text-white px-4 py-2.5 rounded-xl shadow-2xl text-xs sm:text-sm font-medium">
+  </div>
+
+  <script>
+    // =========================================================================
+    // REPUTABLE BRAZILIAN RETAILERS & 30-DAY HISTORICAL DATASET
+    // =========================================================================
+    const STORAGE_KEY_30D = 'monitor_gamer_history_30d_v3';
+
+    const offersCatalog = [
+      // --- NOTEBOOKS GAMER ---
+      {
+        id: "nb-1",
+        category: "notebook",
+        tier: "entry",
+        store: "KaBuM!",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por KaBuM!",
+        storeUrl: "https://www.kabum.com.br/busca/notebook-gamer-lenovo-loq-rtx-3050",
+        title: "Notebook Gamer Lenovo LOQ-e 15IAX9E, Intel Core i5-12450HX, 8GB DDR5, SSD 512GB NVMe, RTX 3050 6GB, Tela 15.6\" FHD 144Hz IPS",
+        gpu: "RTX 3050",
+        gpuLabel: "RTX 3050 6GB",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-12450HX",
+        ram: "8GB",
+        ramLabel: "8GB DDR5 (1 slot livre)",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 4599.00, 15: 4649.00, 21: 4699.00, 30: 4749.00 },
+        history30d: [4899, 4850, 4799, 4749, 4799, 4720, 4699, 4680, 4649, 4620, 4599, 4549, 4499, 4450, 4399],
+        finalPricePix: 4399.00,
+        installments: "10x de R$ 488,77",
+        coupon: null,
+        upgradeNotes: "Possui 1 slot DDR5 livre (suporta até 32GB) e 1 slot M.2 adicional para expansão."
+      },
+      {
+        id: "nb-2",
+        category: "notebook",
+        tier: "entry",
+        store: "Amazon Brasil",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Amazon.com.br",
+        storeUrl: "https://www.amazon.com.br/s?k=Notebook+Gamer+Acer+Nitro+V15+RTX+3050",
+        title: "Notebook Gamer Acer Nitro V15 ANV15-51-58AZ, Intel Core i5-13420H, 8GB DDR5, SSD 512GB NVMe, RTX 3050 6GB, Tela 15.6\" 144Hz IPS",
+        gpu: "RTX 3050",
+        gpuLabel: "RTX 3050 6GB",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-13420H",
+        ram: "8GB",
+        ramLabel: "8GB DDR5 (1 slot livre)",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 4799.00, 15: 4799.00, 21: 4849.00, 30: 4899.00 },
+        history30d: [4999, 4950, 4899, 4899, 4849, 4849, 4799, 4799, 4799, 4750, 4720, 4710, 4690, 4685, 4679],
+        finalPricePix: 4679.10,
+        installments: "10x de R$ 519,90",
+        coupon: null,
+        upgradeNotes: "Expansível até 32GB DDR5; segundo slot M.2 PCIe disponível."
+      },
+      {
+        id: "nb-3",
+        category: "notebook",
+        tier: "entry",
+        store: "KaBuM!",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por KaBuM!",
+        storeUrl: "https://www.kabum.com.br/busca/notebook-gamer-lenovo-loq-rtx-4050-16gb",
+        title: "Notebook Gamer Lenovo LOQ 15IRX9, Intel Core i5-13450HX, 16GB DDR5, SSD 512GB NVMe, RTX 4050 6GB (105W), Tela 15.6\" 144Hz IPS",
+        gpu: "RTX 4050",
+        gpuLabel: "RTX 4050 6GB (105W)",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-13450HX",
+        ram: "16GB",
+        ramLabel: "16GB DDR5 (2x8GB)",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 6299.00, 15: 6349.00, 21: 6379.00, 30: 6379.00 }, // Queda > 11.4% em 7d e 12.5% em 30d!
+        history30d: [6599, 6499, 6379, 6399, 6379, 6349, 6349, 6299, 6299, 6249, 6199, 6099, 5899, 5699, 5579],
+        finalPricePix: 5579.10,
+        installments: "10x de R$ 688,77",
+        coupon: "cupom LOQ10OFF",
+        upgradeNotes: "Já vem com 16GB DDR5 em dual-channel, GPU com TGP 105W e tela 100% sRGB; possui 1 slot M.2 2280 livre."
+      },
+      {
+        id: "nb-4",
+        category: "notebook",
+        tier: "entry",
+        store: "Acer Store",
+        trustedRetailer: true,
+        sellerLabel: "Loja Oficial Acer Brasil",
+        storeUrl: "https://br-store.acer.com/notebook-gamer-nitro-v15",
+        title: "Notebook Gamer Acer Nitro V15 ANV15-51-54DL, Intel Core i5-13420H, 16GB DDR5, SSD 512GB NVMe, RTX 4050 6GB, Tela 15.6\" 144Hz IPS",
+        gpu: "RTX 4050",
+        gpuLabel: "RTX 4050 6GB",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-13420H",
+        ram: "16GB",
+        ramLabel: "16GB DDR5",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 6099.00, 15: 6149.00, 21: 6199.00, 30: 6199.00 },
+        history30d: [6399, 6299, 6199, 6199, 6149, 6149, 6099, 6099, 6049, 5999, 5950, 5920, 5910, 5899, 5899],
+        finalPricePix: 5899.00,
+        installments: "12x de R$ 541,58",
+        coupon: "cupom BLACKMARI",
+        upgradeNotes: "Pronto para uso imediato com 16GB DDR5 e Windows 11 de fábrica."
+      },
+      {
+        id: "nb-5",
+        category: "notebook",
+        tier: "entry",
+        store: "Fast Shop",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Fast Shop",
+        storeUrl: "https://site.fastshop.com.br/busca?q=notebook+gamer+rtx+4050",
+        title: "Notebook Gamer ASUS TUF Gaming F16, Intel Core i5-13450HX, 16GB DDR5, SSD 512GB NVMe, RTX 4050 6GB, Tela 16\" FHD+ 165Hz IPS",
+        gpu: "RTX 4050",
+        gpuLabel: "RTX 4050 6GB",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-13450HX",
+        ram: "16GB",
+        ramLabel: "16GB DDR5",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 6399.00, 15: 6449.00, 21: 6499.00, 30: 6599.00 },
+        history30d: [6799, 6699, 6599, 6549, 6499, 6449, 6449, 6399, 6399, 6349, 6320, 6299, 6299, 6299, 6299],
+        finalPricePix: 6299.00,
+        installments: "10x de R$ 699,88",
+        coupon: null,
+        upgradeNotes: "Construção militar MIL-STD-810H, bateria de 90Wh e dois slots M.2 PCIe 4.0."
+      },
+      {
+        id: "nb-6",
+        category: "notebook",
+        tier: "mid",
+        store: "Magalu",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Magalu",
+        storeUrl: "https://www.magazineluiza.com.br/busca/notebook+gamer+rtx+4060/",
+        title: "Notebook Gamer Acer Nitro V15 ANV15-52-790M, Intel Core i7-13620H, 16GB DDR5, SSD 512GB NVMe, RTX 4060 8GB, Tela 15.6\" 165Hz IPS",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB",
+        cpu: "Core i7 / Ultra 7",
+        cpuLabel: "Core i7-13620H",
+        ram: "16GB",
+        ramLabel: "16GB DDR5",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 7899.00, 15: 7999.00, 21: 8099.00, 30: 8199.00 },
+        history30d: [8399, 8299, 8199, 8149, 8099, 8049, 7999, 7999, 7949, 7899, 7849, 7820, 7799, 7799, 7799],
+        finalPricePix: 7799.00,
+        installments: "12x de R$ 649,91 sem juros",
+        coupon: null,
+        upgradeNotes: "Menor preço atual para RTX 4060 8GB em notebook; possui slot livre para segundo SSD."
+      },
+      {
+        id: "nb-7",
+        category: "notebook",
+        tier: "mid",
+        store: "Amazon Brasil",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Amazon.com.br",
+        storeUrl: "https://www.amazon.com.br/s?k=ASUS+TUF+Gaming+A15+RTX+4060",
+        title: "Notebook Gamer ASUS TUF Gaming A15, AMD Ryzen 7 7435HS, 16GB DDR5, SSD 512GB NVMe, RTX 4060 8GB (140W), Tela 15.6\" 144Hz IPS",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB (140W)",
+        cpu: "Ryzen 7",
+        cpuLabel: "Ryzen 7 7435HS",
+        ram: "16GB",
+        ramLabel: "16GB DDR5",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 8499.00, 15: 8899.00, 21: 8999.00, 30: 9199.00 }, // Queda >= 10% em 15d, 21d e 30d!
+        history30d: [9299, 9199, 9199, 9099, 8999, 8999, 8899, 8899, 8699, 8499, 8399, 8299, 8150, 8050, 7979],
+        finalPricePix: 7979.05,
+        installments: "12x de R$ 736,75",
+        coupon: null,
+        upgradeNotes: "RTX 4060 com TGP máximo (140W) e MUX Switch; excelente refrigeração em sessões longas."
+      },
+      {
+        id: "nb-8",
+        category: "notebook",
+        tier: "mid",
+        store: "Dell Brasil",
+        trustedRetailer: true,
+        sellerLabel: "Loja Oficial Dell Brasil",
+        storeUrl: "https://www.dell.com/pt-br/shop/notebooks-gamer/sr/laptops/g-series",
+        title: "Notebook Gamer Dell G15 5530, Intel Core i7-13650HX, 16GB DDR5, SSD 1TB NVMe, RTX 4060 8GB (140W), Tela 15.6\" FHD 165Hz IPS",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB (140W)",
+        cpu: "Core i7 / Ultra 7",
+        cpuLabel: "Core i7-13650HX",
+        ram: "16GB",
+        ramLabel: "16GB DDR5",
+        ssd: "1TB",
+        ssdLabel: "1TB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 8899.00, 15: 8999.00, 21: 9099.00, 30: 9199.00 },
+        history30d: [9399, 9299, 9199, 9199, 9099, 9099, 8999, 8999, 8949, 8899, 8899, 8899, 8899, 8899, 8899],
+        finalPricePix: 8899.00,
+        installments: "12x de R$ 741,58 sem juros",
+        coupon: null,
+        upgradeNotes: "Sistema térmico robusto de 4 saídas, 1TB NVMe de fábrica e suporte técnico Dell em domicílio."
+      },
+      {
+        id: "nb-9",
+        category: "notebook",
+        tier: "high",
+        store: "Lenovo Brasil",
+        trustedRetailer: true,
+        sellerLabel: "Loja Oficial Lenovo Brasil",
+        storeUrl: "https://www.lenovo.com/br/pt/c/laptops/legion-laptops/",
+        title: "Notebook Gamer Lenovo Legion 5i OLED, Intel Core Ultra 7 255HX, 32GB DDR5, SSD 1TB NVMe, RTX 4070 8GB, Tela 16\" QHD+ 240Hz OLED",
+        gpu: "RTX 4070",
+        gpuLabel: "RTX 4070 8GB",
+        cpu: "Core i7 / Ultra 7",
+        cpuLabel: "Core Ultra 7 255HX",
+        ram: "32GB",
+        ramLabel: "32GB DDR5",
+        ssd: "1TB",
+        ssdLabel: "1TB NVMe",
+        extra: "240Hz QHD/OLED",
+        extraLabel: "240Hz QHD/OLED",
+        lows: { 7: 11299.00, 15: 11499.00, 21: 11699.00, 30: 11899.00 },
+        history30d: [12299, 12099, 11899, 11799, 11699, 11599, 11499, 11399, 11299, 11199, 11099, 10999, 10950, 10910, 10899],
+        finalPricePix: 10899.00,
+        installments: "12x de R$ 991,58",
+        coupon: "cupom AMIGOLENOVO",
+        upgradeNotes: "Painel OLED 240Hz de 0.5ms calibrado de fábrica, 32GB DDR5 e chassi em alumínio."
+      },
+      {
+        id: "nb-10",
+        category: "notebook",
+        tier: "high",
+        store: "KaBuM!",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por KaBuM!",
+        storeUrl: "https://www.kabum.com.br/busca/notebook-gamer-predator-helios-rtx-5070",
+        title: "Notebook Gamer Acer Predator Helios Neo 16 AI, Core Ultra 7 255HX, 32GB DDR5, SSD 1TB NVMe, RTX 5070 12GB, Tela 16\" QHD+ 240Hz",
+        gpu: "RTX 5070",
+        gpuLabel: "RTX 5070 12GB",
+        cpu: "Core i7 / Ultra 7",
+        cpuLabel: "Core Ultra 7 255HX",
+        ram: "32GB",
+        ramLabel: "32GB DDR5",
+        ssd: "1TB",
+        ssdLabel: "1TB NVMe",
+        extra: "240Hz QHD/OLED",
+        extraLabel: "240Hz QHD/OLED",
+        lows: { 7: 13999.00, 15: 14199.00, 21: 14399.00, 30: 14599.00 },
+        history30d: [14899, 14699, 14599, 14499, 14399, 14299, 14199, 14099, 13999, 13950, 13899, 13850, 13820, 13799, 13799],
+        finalPricePix: 13799.00,
+        installments: "10x de R$ 1.533,22",
+        coupon: null,
+        upgradeNotes: "32GB DDR5 de fábrica + 12GB de VRAM na RTX 5070 ideal para QHD nativo com Ray Tracing."
+      },
+
+      // --- PCs GAMER MONTADOS ---
+      {
+        id: "pc-1",
+        category: "pc",
+        tier: "entry",
+        store: "Terabyteshop",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Terabyteshop",
+        storeUrl: "https://www.terabyteshop.com.br/pc-gamer",
+        title: "PC Gamer T-Gamer Entry RTX, Intel Core i5-12400F, GeForce RTX 3050 6GB, 16GB DDR4 3200MHz, SSD 512GB NVMe, Air Cooler + Fonte 550W 80 Plus",
+        gpu: "RTX 3050",
+        gpuLabel: "RTX 3050 6GB",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-12400F",
+        ram: "16GB",
+        ramLabel: "16GB DDR4 (2x8GB)",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "Air Cooler",
+        extraLabel: "Air Cooler",
+        lows: { 7: 4349.00, 15: 4399.00, 21: 4449.00, 30: 4499.00 },
+        history30d: [4599, 4549, 4499, 4479, 4449, 4429, 4399, 4379, 4349, 4329, 4310, 4299, 4295, 4289, 4289],
+        finalPricePix: 4289.00,
+        installments: "12x de R$ 420,49",
+        coupon: null,
+        upgradeNotes: "Plataforma LGA 1700 permite upgrade futuro até i5-14600KF; ótimo para eSports (CS2, Valorant)."
+      },
+      {
+        id: "pc-2",
+        category: "pc",
+        tier: "entry",
+        store: "Pichau",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Pichau",
+        storeUrl: "https://www.pichau.com.br/computadores/pichau-gamer",
+        title: "PC Gamer Pichau Afrodite, AMD Ryzen 5 5500, Radeon RX 7600 8GB, 16GB DDR4 3200MHz, SSD 512GB NVMe, Air Cooler + Fonte 600W 80 Plus",
+        gpu: "RX 7600",
+        gpuLabel: "RX 7600 8GB",
+        cpu: "Ryzen 5",
+        cpuLabel: "Ryzen 5 5500",
+        ram: "16GB",
+        ramLabel: "16GB DDR4 (2x8GB)",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "Air Cooler",
+        extraLabel: "Air Cooler",
+        lows: { 7: 4699.90, 15: 4779.90, 21: 4849.90, 30: 4899.90 },
+        history30d: [4999, 4949, 4899, 4879, 4849, 4799, 4779, 4749, 4699, 4679, 4659, 4639, 4619, 4609, 4599],
+        finalPricePix: 4599.90,
+        installments: "12x de R$ 450,97",
+        coupon: null,
+        upgradeNotes: "Melhor custo-benefício abaixo de R$ 5 mil; RX 7600 empata com RTX 4060 em rasterização Full HD."
+      },
+      {
+        id: "pc-3",
+        category: "pc",
+        tier: "mid",
+        store: "KaBuM!",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por KaBuM!",
+        storeUrl: "https://www.kabum.com.br/computadores/pc-gamer",
+        title: "PC Gamer Montado AMD Ryzen 5 5600, GeForce RTX 4060 8GB, 16GB DDR4 3200MHz, SSD 512GB NVMe, Placa B550M, Air Cooler + Fonte 600W 80 Plus",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB",
+        cpu: "Ryzen 5",
+        cpuLabel: "Ryzen 5 5600",
+        ram: "16GB",
+        ramLabel: "16GB DDR4",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "Air Cooler",
+        extraLabel: "Air Cooler",
+        lows: { 7: 6499.00, 15: 6599.00, 21: 6699.00, 30: 6799.00 }, // Queda > 11% em 15d, 21d e 30d!
+        history30d: [6899, 6799, 6799, 6699, 6699, 6599, 6599, 6499, 6499, 6399, 6299, 6199, 6050, 5950, 5859],
+        finalPricePix: 5859.00,
+        installments: "10x de R$ 651,00",
+        coupon: null,
+        upgradeNotes: "Ryzen 5 5600 possui 32MB de cache L3 e PCIe 4.0, extraindo 100% da RTX 4060 sem gargalo."
+      },
+      {
+        id: "pc-4",
+        category: "pc",
+        tier: "mid",
+        store: "Pichau",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Pichau",
+        storeUrl: "https://www.pichau.com.br/computadores/pichau-gamer",
+        title: "PC Gamer Pichau Highflyer, Intel Core i5-12400F, GeForce RTX 4060 8GB, 16GB DDR4, SSD 512GB NVMe, Air Cooler + Fonte 600W 80 Plus",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-12400F",
+        ram: "16GB",
+        ramLabel: "16GB DDR4",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "Air Cooler",
+        extraLabel: "Air Cooler",
+        lows: { 7: 5999.90, 15: 6099.90, 21: 6149.90, 30: 6199.90 },
+        history30d: [6299, 6199, 6199, 6149, 6149, 6099, 6099, 5999, 5999, 5999, 5999, 5999, 5999, 5999, 5999],
+        finalPricePix: 5999.90,
+        installments: "12x de R$ 588,22",
+        coupon: null,
+        upgradeNotes: "Vendido e montado diretamente pela Pichau com peças de marcas conhecidas e nota fiscal individual."
+      },
+      {
+        id: "pc-5",
+        category: "pc",
+        tier: "mid",
+        store: "Terabyteshop",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Terabyteshop",
+        storeUrl: "https://www.terabyteshop.com.br/pc-gamer",
+        title: "PC Gamer T-Gamer Conqueror, AMD Ryzen 5 5600, GeForce RTX 4060 8GB, 16GB DDR4, SSD 1TB NVMe, Water Cooler 240mm + Fonte 650W 80 Plus",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB",
+        cpu: "Ryzen 5",
+        cpuLabel: "Ryzen 5 5600",
+        ram: "16GB",
+        ramLabel: "16GB DDR4",
+        ssd: "1TB",
+        ssdLabel: "1TB NVMe",
+        extra: "Water Cooler",
+        extraLabel: "Water Cooler",
+        lows: { 7: 6499.00, 15: 6559.00, 21: 6649.00, 30: 6749.00 },
+        history30d: [6849, 6799, 6749, 6699, 6649, 6599, 6559, 6529, 6499, 6459, 6429, 6399, 6379, 6359, 6349],
+        finalPricePix: 6349.00,
+        installments: "12x de R$ 622,45",
+        coupon: "cupom GAMER5PIX",
+        upgradeNotes: "Já inclui SSD de 1TB NVMe e Water Cooler 240mm com folga térmica."
+      },
+      {
+        id: "pc-6",
+        category: "pc",
+        tier: "high",
+        store: "Pichau",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Pichau",
+        storeUrl: "https://www.pichau.com.br/computadores/pichau-gamer",
+        title: "PC Gamer Pichau Valkyrie, AMD Ryzen 7 5700X3D, Radeon RX 7700 XT 12GB, 32GB DDR4 3200MHz, SSD 1TB NVMe, Water Cooler 240mm + Fonte 750W 80 Plus",
+        gpu: "RX 7700 XT",
+        gpuLabel: "RX 7700 XT 12GB",
+        cpu: "Ryzen 7",
+        cpuLabel: "Ryzen 7 5700X3D",
+        ram: "32GB",
+        ramLabel: "32GB DDR4",
+        ssd: "1TB",
+        ssdLabel: "1TB NVMe",
+        extra: "Water Cooler",
+        extraLabel: "Water Cooler",
+        lows: { 7: 9499.00, 15: 9599.00, 21: 9699.00, 30: 9799.00 }, // Queda > 10.5% em todas as janelas!
+        history30d: [9899, 9799, 9799, 9699, 9699, 9599, 9599, 9499, 9499, 9299, 9099, 8899, 8699, 8599, 8499],
+        finalPricePix: 8499.00,
+        installments: "12x de R$ 833,23",
+        coupon: null,
+        upgradeNotes: "Combo campeão para QHD 1440p: Ryzen 7 5700X3D (cache 3D) + RX 7700 XT 12GB."
+      },
+      {
+        id: "pc-7",
+        category: "pc",
+        tier: "high",
+        store: "Terabyteshop",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Terabyteshop",
+        storeUrl: "https://www.terabyteshop.com.br/pc-gamer",
+        title: "PC Gamer Plataforma AM5, AMD Ryzen 7 7700, GeForce RTX 4070 12GB, 32GB DDR5 5600MHz, SSD 1TB NVMe, Water Cooler 240mm + Fonte 750W 80 Plus",
+        gpu: "RTX 4070",
+        gpuLabel: "RTX 4070 12GB",
+        cpu: "Ryzen 7",
+        cpuLabel: "Ryzen 7 7700 (AM5)",
+        ram: "32GB",
+        ramLabel: "32GB DDR5",
+        ssd: "1TB",
+        ssdLabel: "1TB NVMe",
+        extra: "Water Cooler",
+        extraLabel: "Water Cooler",
+        lows: { 7: 10190.00, 15: 10290.00, 21: 10390.00, 30: 10490.00 },
+        history30d: [10690, 10590, 10490, 10440, 10390, 10340, 10290, 10240, 10190, 10150, 10090, 10050, 10020, 9990, 9990],
+        finalPricePix: 9990.00,
+        installments: "12x de R$ 979,41",
+        coupon: "cupom GAMER5PIX",
+        upgradeNotes: "Plataforma moderna AM5 + DDR5 com longevidade garantida e RTX 4070 12GB."
+      },
+      {
+        id: "pc-8",
+        category: "pc",
+        tier: "high",
+        store: "KaBuM!",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por KaBuM!",
+        storeUrl: "https://www.kabum.com.br/computadores/pc-gamer",
+        title: "PC Gamer Extreme AM5, AMD Ryzen 7 7800X3D, GeForce RTX 5070 12GB, 32GB DDR5 6000MHz, SSD 2TB NVMe, Water Cooler 360mm + Fonte 850W 80 Plus Gold",
+        gpu: "RTX 5070",
+        gpuLabel: "RTX 5070 12GB",
+        cpu: "Ryzen 7",
+        cpuLabel: "Ryzen 7 7800X3D",
+        ram: "32GB",
+        ramLabel: "32GB DDR5",
+        ssd: "2TB",
+        ssdLabel: "2TB NVMe",
+        extra: "Water Cooler",
+        extraLabel: "Water Cooler",
+        lows: { 7: 13899.00, 15: 14099.00, 21: 14299.00, 30: 14499.00 },
+        history30d: [14799, 14599, 14499, 14399, 14299, 14199, 14099, 13999, 13899, 13799, 13699, 13599, 13549, 13499, 13499],
+        finalPricePix: 13499.00,
+        installments: "10x de R$ 1.499,88",
+        coupon: null,
+        upgradeNotes: "Máquina topo de linha com 2TB NVMe Gen4, Ryzen 7 7800X3D e RTX 5070 12GB."
+      }
+    ];
+
+    // =========================================================================
+    // PERSISTENT 30-DAY MEMORY & MULTI-SELECT FILTER ENGINE
+    // =========================================================================
+    const filterState = {
+      lookbackDays: 30,
+      search: '',
+      maxPrice: 15000,
+      antiScam: true,
+      category: new Set(),
+      gpu: new Set(),
+      cpu: new Set(),
+      ram: new Set(),
+      ssd: new Set(),
+      extra: new Set(),
+      status: new Set()
+    };
+
+    function loadPriceMemory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_30D);
+        if (raw) {
+          const saved = JSON.parse(raw);
+          offersCatalog.forEach(item => {
+            if (saved[item.id]) {
+              item.lows = { ...item.lows, ...saved[item.id].lows };
+              if (typeof saved[item.id].finalPricePix === 'number') {
+                item.finalPricePix = saved[item.id].finalPricePix;
+              }
+              if (Array.isArray(saved[item.id].history30d)) {
+                item.history30d = saved[item.id].history30d;
+              }
+            }
+          });
+        } else {
+          savePriceMemory();
+        }
+      } catch (e) {}
+    }
+
+    function savePriceMemory() {
+      try {
+        const payload = {};
+        offersCatalog.forEach(item => {
+          payload[item.id] = {
+            lows: item.lows,
+            finalPricePix: item.finalPricePix,
+            history30d: item.history30d,
+            savedAt: new Date().toISOString()
+          };
+        });
+        localStorage.setItem(STORAGE_KEY_30D, JSON.stringify(payload));
+      } catch (e) {}
+    }
+
+    function resetPriceMemory() {
+      localStorage.removeItem(STORAGE_KEY_30D);
+      location.reload();
+    }
+
+    function computeDropMetrics(item) {
+      const days = filterState.lookbackDays;
+      const periodLow = item.lows[days] || item.lows[30];
+      const diff = periodLow - item.finalPricePix;
+      const pct = periodLow > 0 ? (diff / periodLow) * 100 : 0;
+      const isMajorDrop = pct >= 10.0;
+      return {
+        days,
+        periodLow,
+        diff,
+        pct,
+        pctFormatted: pct > 0 ? `-${pct.toFixed(1).replace('.', ',')}%` : '0,0%',
+        isMajorDrop
+      };
+    }
+
+    function formatBRL(val) {
+      return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function setLookbackDays(days) {
+      filterState.lookbackDays = days;
+
+      // Sync top buttons
+      [7, 15, 21, 30].forEach(d => {
+        const btn = document.getElementById(`win-top-${d}`);
+        if (!btn) return;
+        if (d === days) {
+          btn.classList.add('bg-[#CC0000]', 'text-white', 'font-bold');
+          btn.classList.remove('text-[#A8A29E]', 'font-medium');
+        } else {
+          btn.classList.remove('bg-[#CC0000]', 'text-white', 'font-bold');
+          btn.classList.add('text-[#A8A29E]', 'font-medium');
+        }
+      });
+
+      // Sync dropdown inside filter panel
+      const sel = document.getElementById('filter-lookback-select');
+      if (sel) sel.value = String(days);
+
+      // Update labels across UI
+      document.getElementById('flash-banner-title').textContent =
+        `Ofertas que romperam o menor preço dos últimos ${days} dias em 10% ou mais`;
+      document.getElementById('summary-window-caption').textContent =
+        `Comparando preço atual (Pix) vs menor valor nos últimos ${days} dias`;
+      document.getElementById('th-nb-low').textContent = `Menor (${days}d)`;
+      document.getElementById('th-pc-low').textContent = `Menor (${days}d)`;
+      document.getElementById('consultant-win-label').textContent = `${days} dias`;
+
+      applyAllFilters();
+    }
+
+    function toggleMultiFilter(group, value) {
+      const set = filterState[group];
+      if (!set) return;
+
+      if (set.has(value)) {
+        set.delete(value);
+      } else {
+        set.add(value);
+      }
+
+      syncChipVisuals();
+      applyAllFilters();
+    }
+
+    function toggleOnlyMajorDrops() {
+      toggleMultiFilter('status', 'drop10');
+    }
+
+    function syncChipVisuals() {
+      const groups = ['category', 'gpu', 'cpu', 'ram', 'ssd', 'extra', 'status'];
+      groups.forEach(group => {
+        const set = filterState[group];
+        const container = document.querySelector(`[data-filter-group="${group}"]`);
+        if (container) {
+          container.querySelectorAll('.chip-btn').forEach(btn => {
+            const val = btn.getAttribute('data-val');
+            if (set.has(val)) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+        }
+        const countEl = document.getElementById(`count-${group}`);
+        if (countEl) {
+          countEl.textContent = set.size > 0 ? `${set.size} ${set.size === 1 ? 'selecionado' : 'selecionados'}` : '';
+        }
+      });
+    }
+
+    function updatePriceLabel() {
+      const val = Number(document.getElementById('filter-max-price').value);
+      const label = document.getElementById('price-slider-label');
+      label.textContent = val >= 15000 ? 'Até R$ 15.000+' : `Até ${formatBRL(val)}`;
+    }
+
+    function resetAllFilters() {
+      filterState.search = '';
+      filterState.maxPrice = 15000;
+      filterState.antiScam = true;
+      ['category', 'gpu', 'cpu', 'ram', 'ssd', 'extra', 'status'].forEach(g => filterState[g].clear());
+
+      document.getElementById('filter-search').value = '';
+      document.getElementById('filter-max-price').value = 15000;
+      document.getElementById('filter-anti-scam').checked = true;
+      updatePriceLabel();
+      syncChipVisuals();
+      applyAllFilters();
+      showToast('Todos os filtros multi-seleção foram limpos.');
+    }
+
+    function getFilteredOffers() {
+      filterState.search = document.getElementById('filter-search').value.trim().toLowerCase();
+      filterState.maxPrice = Number(document.getElementById('filter-max-price').value);
+      filterState.antiScam = document.getElementById('filter-anti-scam').checked;
+
+      return offersCatalog.filter(item => {
+        const m = computeDropMetrics(item);
+
+        if (filterState.antiScam && !item.trustedRetailer) return false;
+        if (filterState.maxPrice < 15000 && item.finalPricePix > filterState.maxPrice) return false;
+
+        if (filterState.category.size > 0 && !filterState.category.has(item.category)) return false;
+        if (filterState.gpu.size > 0 && !filterState.gpu.has(item.gpu)) return false;
+        if (filterState.cpu.size > 0 && !filterState.cpu.has(item.cpu)) return false;
+        if (filterState.ram.size > 0 && !filterState.ram.has(item.ram)) return false;
+        if (filterState.ssd.size > 0 && !filterState.ssd.has(item.ssd)) return false;
+        if (filterState.extra.size > 0 && !filterState.extra.has(item.extra)) return false;
+
+        if (filterState.status.has('drop10') && !m.isMajorDrop) return false;
+        if (filterState.status.has('coupon') && !item.coupon) return false;
+
+        if (filterState.search) {
+          const hay = `${item.store} ${item.title} ${item.gpuLabel} ${item.cpuLabel} ${item.ramLabel} ${item.ssdLabel} ${item.extraLabel} ${item.coupon || ''}`.toLowerCase();
+          if (!hay.includes(filterState.search)) return false;
+        }
+
+        return true;
+      });
+    }
+
+    // =========================================================================
+    // RENDERING SECTIONS
+    // =========================================================================
+    function renderFlashOpportunities() {
+      const section = document.getElementById('flash-opportunities-section');
+      const grid = document.getElementById('flash-opportunities-grid');
+      const btnIsolate = document.getElementById('btn-isolate-drops');
+
+      const majorDrops = offersCatalog
+        .filter(item => !filterState.antiScam || item.trustedRetailer)
+        .map(item => ({ item, m: computeDropMetrics(item) }))
+        .filter(entry => entry.m.isMajorDrop)
+        .sort((a, b) => b.m.pct - a.m.pct);
+
+      const isIsolated = filterState.status.has('drop10');
+      btnIsolate.textContent = isIsolated
+        ? 'Mostrar todas as ofertas'
+        : `Filtrar apenas estas ${majorDrops.length} ofertas`;
+
+      if (majorDrops.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      section.classList.remove('hidden');
+      grid.innerHTML = majorDrops.map(({ item, m }) => `
+        <div class="bg-[#181311] border border-[#CC0000] rounded-xl p-3.5 flex flex-col justify-between gap-2.5 shadow-lg">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-extrabold text-white">${item.store}</span>
+                <span class="text-[11px] text-[#A8A29E]">· ${item.category === 'notebook' ? 'Notebook' : 'PC Gamer'}</span>
+              </div>
+              <span class="badge-drop-alert px-2 py-0.5 rounded text-[11px] font-extrabold">
+                ${m.pctFormatted} vs ${m.days}d
+              </span>
+            </div>
+
+            <p class="text-xs text-[#F5F5F4] font-medium line-clamp-2 mb-2">
+              ${item.title}
+            </p>
+
+            <div class="flex flex-wrap gap-1 mb-2">
+              <span class="badge-spec px-1.5 py-0.5 rounded text-[10px] font-bold text-white border-[#CC0000]/50">${item.gpuLabel}</span>
+              <span class="badge-spec px-1.5 py-0.5 rounded text-[10px]">${item.cpuLabel}</span>
+              <span class="badge-spec px-1.5 py-0.5 rounded text-[10px]">${item.ram} · ${item.ssd}</span>
+            </div>
+          </div>
+
+          <div class="flex items-end justify-between gap-2 pt-2 border-t border-[#463C38]/80">
+            <div>
+              <div class="text-[11px] text-[#FCA5A5] line-through">Menor (${m.days}d): ${formatBRL(m.periodLow)}</div>
+              <div class="text-lg sm:text-xl font-extrabold text-white">${formatBRL(item.finalPricePix)}</div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="analyzeSingleOffer('${item.id}')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-[#2A211D] hover:bg-[#332925] text-white border border-[#463C38] transition">
+                ✦ IA
+              </button>
+              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition">
+                Ir para loja ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderActiveFilterPills() {
+      const container = document.getElementById('active-filter-pills');
+      const pills = [];
+
+      const labelsMap = {
+        category: { notebook: 'Notebook Gamer', pc: 'PC Gamer Montado' },
+        status: { drop10: 'Queda ≥ 10%', coupon: 'Com Cupom Ativo' }
+      };
+
+      ['category', 'gpu', 'cpu', 'ram', 'ssd', 'extra', 'status'].forEach(group => {
+        filterState[group].forEach(val => {
+          const display = (labelsMap[group] && labelsMap[group][val]) ? labelsMap[group][val] : val;
+          pills.push({ group, val, display });
+        });
+      });
+
+      if (filterState.maxPrice < 15000) {
+        pills.push({ group: 'maxPrice', val: 15000, display: `Até ${formatBRL(filterState.maxPrice)}` });
+      }
+      if (filterState.search) {
+        pills.push({ group: 'search', val: '', display: `Busca: "${filterState.search}"` });
+      }
+
+      if (pills.length === 0) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+
+      container.classList.remove('hidden');
+      container.innerHTML = `
+        <span class="text-[11px] text-[#A8A29E] font-semibold mr-1">Filtros ativos:</span>
+        ${pills.map(p => {
+          if (p.group === 'maxPrice') {
+            return `<button onclick="document.getElementById('filter-max-price').value=15000; updatePriceLabel(); applyAllFilters();" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#CC0000] text-white hover:bg-[#990000] transition">${p.display} &times;</button>`;
+          }
+          if (p.group === 'search') {
+            return `<button onclick="document.getElementById('filter-search').value=''; applyAllFilters();" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#CC0000] text-white hover:bg-[#990000] transition">${p.display} &times;</button>`;
+          }
+          return `<button onclick="toggleMultiFilter('${p.group}', '${p.val}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#CC0000] text-white hover:bg-[#990000] transition">${p.display} &times;</button>`;
+        }).join('')}
+      `;
+    }
+
+    function renderDynamicSummary(filtered) {
+      const summaryEl = document.getElementById('dynamic-summary-list');
+
+      if (filtered.length === 0) {
+        summaryEl.innerHTML = `
+          <div class="text-[#D6D3D1] text-xs sm:text-sm py-2">
+            Nenhuma oferta compatível com esta combinação de filtros. Experimente marcar mais opções ou ampliar o orçamento máximo.
+          </div>
+        `;
+        return;
+      }
+
+      const nbEntry = filtered.find(i => i.category === 'notebook' && i.tier === 'entry');
+      const nbMidHigh = filtered.find(i => i.category === 'notebook' && (i.tier === 'mid' || i.tier === 'high'));
+      const pcBest = filtered.find(i => i.category === 'pc');
+
+      const lines = [];
+      const buildLine = (title, item) => {
+        const m = computeDropMetrics(item);
+        const dropTag = m.isMajorDrop
+          ? `<span class="badge-drop-alert px-2 py-0.5 rounded text-[11px] font-extrabold ml-1">QUEDA ${m.pctFormatted} (${m.days}d)</span>`
+          : '';
+        return `
+          <div class="flex flex-wrap items-baseline gap-x-1.5">
+            <span class="font-bold text-white">${title}:</span>
+            <span class="font-extrabold ${m.isMajorDrop ? 'text-[#FF4D4D]' : 'text-white'}">${formatBRL(item.finalPricePix)}</span>
+            <span class="text-[#736B68]">—</span>
+            <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-[#CC0000] decoration-2 hover:text-[#FCA5A5] font-semibold">${item.store} ↗</a>
+            <span class="text-[#D6D3D1]">(${item.cpuLabel} · ${item.gpuLabel} · ${item.ram} · ${item.ssd}).</span>
+            ${dropTag}
+          </div>
+        `;
+      };
+
+      if (nbEntry) lines.push(buildLine('Notebook Gamer de Entrada', nbEntry));
+      if (nbMidHigh) lines.push(buildLine('Notebook Gamer Intermediário / Avançado', nbMidHigh));
+      if (pcBest) lines.push(buildLine('PC Gamer Montado', pcBest));
+
+      summaryEl.innerHTML = lines.join('');
+    }
+
+    function buildSparklineSVG(historyArr, isAlert) {
+      const sliceCount = Math.min(historyArr.length, Math.max(7, Math.ceil(filterState.lookbackDays / 2)));
+      const data = historyArr.slice(-sliceCount);
+      const min = Math.min(...data);
+      const max = Math.max(...data);
+      const range = Math.max(1, max - min);
+
+      const width = 144;
+      const height = 34;
+      const padX = 4;
+      const padY = 5;
+
+      const points = data.map((val, idx) => {
+        const x = padX + (idx / Math.max(1, data.length - 1)) * (width - padX * 2);
+        const y = height - padY - ((val - min) / range) * (height - padY * 2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+
+      const lastCoords = points.split(' ').pop().split(',');
+      const refY = (padY + (height - padY * 2) * 0.45).toFixed(1);
+
+      return `
+        <svg width="144" height="34" viewBox="0 0 144 34" class="overflow-visible">
+          <line x1="0" y1="${refY}" x2="142" y2="${refY}" stroke="#736B68" stroke-width="1" stroke-dasharray="3,3" />
+          <polyline class="${isAlert ? 'sparkline-path-alert' : 'sparkline-path'}" points="${points}" />
+          <circle cx="${lastCoords[0]}" cy="${lastCoords[1]}" r="3.5" fill="${isAlert ? '#CC0000' : '#FFFFFF'}" stroke="#FFFFFF" stroke-width="1.2" />
+        </svg>
+      `;
+    }
+
+    function buildHighlightCardHTML(item, cardLabel, isPrimarySlot) {
+      const m = computeDropMetrics(item);
+      const cardClasses = m.isMajorDrop
+        ? 'card-drop-alert border-2'
+        : isPrimarySlot
+          ? 'bg-[#332925] border-[#5C504B]'
+          : 'bg-[#181311] border-[#463C38]';
+
+      return `
+        <div class="${cardClasses} border rounded-xl p-4 sm:p-5 flex flex-col justify-between transition-all">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-[11px] font-bold tracking-wider uppercase ${m.isMajorDrop ? 'text-[#FCA5A5]' : 'text-[#A8A29E]'}">
+                  ${cardLabel}
+                </span>
+                ${m.isMajorDrop ? `
+                  <span class="badge-drop-alert px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider">
+                    QUEDA ${m.pctFormatted} (${m.days}D)
+                  </span>
+                ` : ''}
+              </div>
+              <button onclick="analyzeSingleOffer('${item.id}')" class="text-[11px] font-semibold text-white hover:text-[#FCA5A5] underline decoration-[#CC0000]">
+                ✦ Analisar custo-benefício
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-baseline gap-2.5 mb-1">
+              <div class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                ${formatBRL(item.finalPricePix)}
+              </div>
+              <div class="text-xs ${m.isMajorDrop ? 'text-[#FCA5A5] font-semibold' : 'text-[#A8A29E]'}">
+                Menor (${m.days}d): <span class="${m.isMajorDrop ? 'line-through' : ''}">${formatBRL(m.periodLow)}</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm mb-2.5">
+              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-[#CC0000] decoration-2 font-bold hover:text-[#FCA5A5]">
+                ${item.store} ↗
+              </a>
+              <span class="${m.isMajorDrop ? 'text-[#FF4D4D] font-bold' : m.diff > 0 ? 'text-[#D6D3D1]' : 'text-[#A8A29E]'}">
+                ${m.diff > 0 ? `▼ ${formatBRL(m.diff)} (${m.pctFormatted}) abaixo do piso de ${m.days}d` : `— igual ao piso de ${m.days}d`}
+              </span>
+            </div>
+
+            <p class="text-xs sm:text-sm text-[#F5F5F4] line-clamp-2 mb-3">
+              ${item.title}
+            </p>
+
+            <!-- Hardware Spec Chips -->
+            <div class="flex flex-wrap gap-1.5 mb-3.5">
+              <span class="badge-spec px-2 py-0.5 rounded text-[11px] font-bold text-white border-[#CC0000]/50">${item.gpuLabel}</span>
+              <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.cpuLabel}</span>
+              <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.ramLabel}</span>
+              <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.ssdLabel}</span>
+              <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.extraLabel}</span>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="badge-verified inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+                ✓ preço conferido · <button onclick="openSnapshotModalById('${item.id}')" class="underline hover:text-white">ver print</button>
+              </span>
+              <span class="badge-trusted inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium">
+                ${item.sellerLabel}
+              </span>
+              ${item.coupon ? `<span class="badge-coupon inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold">${item.coupon}</span>` : ''}
+            </div>
+
+            <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition shrink-0">
+              Ir para loja ↗
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHighlightTiers(filtered) {
+      const container = document.getElementById('highlight-tiers-container');
+
+      const tiers = [
+        {
+          id: 'entry',
+          title: 'Entrada Gamer (RTX 3050 / RTX 4050 / RX 7600)',
+          leftLabel: 'MAIS BARATO — MELHOR PREÇO PIX',
+          rightLabel: 'SEGUNDA MELHOR OPÇÃO / HARDWARE SUPERIOR'
+        },
+        {
+          id: 'mid',
+          title: 'Intermediário Performance (RTX 4060)',
+          leftLabel: 'MAIS BARATO COM RTX 4060',
+          rightLabel: 'DESTAQUE EM CONFIGURAÇÃO / TGP'
+        },
+        {
+          id: 'high',
+          title: 'Alta Performance QHD / Entusiasta (RTX 4070 / RTX 5070 / RX 7700 XT)',
+          leftLabel: 'MELHOR PREÇO ALTA PERFORMANCE',
+          rightLabel: 'CONFIGURAÇÃO MÁXIMA DISPONÍVEL'
+        }
+      ];
+
+      container.innerHTML = tiers.map(tier => {
+        const itemsInTier = filtered.filter(i => i.tier === tier.id);
+        if (itemsInTier.length === 0) return '';
+
+        const first = itemsInTier[0];
+        const second = itemsInTier[1] || null;
+        const hasDropInTier = itemsInTier.some(i => computeDropMetrics(i).isMajorDrop);
+
+        return `
+          <section class="bg-[#2A211D] border ${hasDropInTier ? 'border-[#CC0000]/75' : 'border-[#463C38]'} rounded-xl p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+              <div class="flex items-center gap-2.5">
+                <h2 class="text-base sm:text-lg font-extrabold text-white">${tier.title}</h2>
+                ${hasDropInTier ? `<span class="badge-drop-alert px-2 py-0.5 rounded text-[10px] font-extrabold uppercase">Queda ≥ 10% (${filterState.lookbackDays}d)</span>` : ''}
+              </div>
+              <div class="flex items-center gap-2.5 shrink-0" title="Linha tracejada = menor preço na janela de ${filterState.lookbackDays} dias">
+                <span class="hidden sm:inline text-[11px] text-[#A8A29E]">Histórico ${filterState.lookbackDays}d (piso tracejado)</span>
+                ${buildSparklineSVG(first.history30d, hasDropInTier)}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 ${second ? 'lg:grid-cols-2' : 'grid-cols-1'} gap-4">
+              ${buildHighlightCardHTML(first, tier.leftLabel, true)}
+              ${second ? buildHighlightCardHTML(second, tier.rightLabel, false) : ''}
+            </div>
+          </section>
+        `;
+      }).join('');
+    }
+
+    function renderOfferTable(items, tbodyId, countId, sectionId, categoryKey) {
+      const sectionEl = document.getElementById(sectionId);
+      const tbody = document.getElementById(tbodyId);
+      const countEl = document.getElementById(countId);
+
+      if (filterState.category.size > 0 && !filterState.category.has(categoryKey)) {
+        sectionEl.classList.add('hidden');
+        return;
+      } else {
+        sectionEl.classList.remove('hidden');
+      }
+
+      countEl.textContent = items.length;
+
+      if (items.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-6 px-5 text-center text-[#A8A29E] text-xs sm:text-sm">
+              Nenhuma oferta nesta categoria para os filtros selecionados.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = items.map(item => {
+        const m = computeDropMetrics(item);
+        const rowBg = m.isMajorDrop
+          ? 'row-drop-alert hover:bg-[#CC0000]/25'
+          : 'hover:bg-[#332925]/80';
+
+        return `
+          <tr class="${rowBg} transition-colors">
+            <td class="py-3.5 px-5 align-top">
+              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="font-extrabold text-white hover:text-[#FCA5A5] underline decoration-[#CC0000]">
+                ${item.store} ↗
+              </a>
+              <div class="text-[11px] text-[#A8A29E] mt-0.5">${item.installments}</div>
+              ${m.isMajorDrop ? `
+                <div class="mt-1.5">
+                  <span class="badge-drop-alert inline-block px-2 py-0.5 rounded text-[10px] font-extrabold uppercase">
+                    QUEDA ${m.pctFormatted}
+                  </span>
+                </div>
+              ` : ''}
+            </td>
+            <td class="py-3.5 px-4 align-top">
+              <div class="text-white font-medium leading-snug mb-2">
+                ${item.title}
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5 mb-2">
+                <span class="badge-spec px-2 py-0.5 rounded text-[11px] font-bold text-white border-[#CC0000]/50">${item.gpuLabel}</span>
+                <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.cpuLabel}</span>
+                <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.ramLabel}</span>
+                <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.ssdLabel}</span>
+                <span class="badge-spec px-2 py-0.5 rounded text-[11px]">${item.extraLabel}</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="badge-verified inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium">
+                  ✓ conferido · <button onclick="openSnapshotModalById('${item.id}')" class="underline hover:text-white">ver print</button>
+                </span>
+                <span class="badge-trusted inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium">
+                  ${item.sellerLabel}
+                </span>
+                ${item.coupon ? `
+                  <button onclick="copyCoupon('${item.coupon.replace('cupom ', '')}')" class="badge-coupon inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold hover:bg-[#CC0000] hover:text-white transition" title="Clique para copiar o cupom">
+                    ${item.coupon} (copiar)
+                  </button>
+                ` : ''}
+                <button onclick="analyzeSingleOffer('${item.id}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#181311] text-white border border-[#463C38] hover:border-[#CC0000] transition">
+                  ✦ Analisar custo-benefício
+                </button>
+              </div>
+            </td>
+            <td class="py-3.5 px-4 text-right align-top whitespace-nowrap">
+              <div class="text-xs font-medium ${m.isMajorDrop ? 'text-[#FCA5A5] line-through' : 'text-[#A8A29E]'}">
+                ${formatBRL(m.periodLow)}
+              </div>
+              <div class="text-[11px] text-[#736B68] mt-0.5">piso ${m.days}d</div>
+            </td>
+            <td class="py-3.5 px-4 text-right align-top whitespace-nowrap">
+              <div class="font-extrabold text-white text-sm sm:text-base">${formatBRL(item.finalPricePix)}</div>
+              <div class="text-[11px] mt-0.5 ${m.isMajorDrop ? 'text-[#FF4D4D] font-extrabold' : m.diff > 0 ? 'text-[#D6D3D1]' : 'text-[#736B68]'}">
+                ${m.diff > 0 ? `▼ ${formatBRL(m.diff)} (${m.pctFormatted})` : `estável (${m.days}d)`}
+              </div>
+            </td>
+            <td class="py-3.5 px-5 text-right align-top whitespace-nowrap">
+              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition shadow">
+                Ir para loja ↗
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function applyAllFilters() {
+      offersCatalog.sort((a, b) => a.finalPricePix - b.finalPricePix);
+      const filtered = getFilteredOffers();
+      const notebooks = filtered.filter(i => i.category === 'notebook');
+      const pcs = filtered.filter(i => i.category === 'pc');
+
+      document.getElementById('total-matched-badge').textContent =
+        `${filtered.length} ${filtered.length === 1 ? 'oferta compatível' : 'ofertas compatíveis'}`;
+
+      document.getElementById('consultant-context-badge').textContent =
+        `Analisando ${filtered.length} ofertas filtradas (janela ${filterState.lookbackDays}d)`;
+
+      renderFlashOpportunities();
+      renderActiveFilterPills();
+      renderDynamicSummary(filtered);
+      renderHighlightTiers(filtered);
+      renderOfferTable(notebooks, 'notebooks-tbody', 'notebooks-count', 'table-notebooks', 'notebook');
+      renderOfferTable(pcs, 'pcs-tbody', 'pcs-count', 'table-pcs', 'pc');
+    }
+
+    // =========================================================================
+    // MODALS, LIVE SCAN & AI CONSULTANT
+    // =========================================================================
+    function toggleAccordion(bodyId, chevronId) {
+      const body = document.getElementById(bodyId);
+      const chevron = document.getElementById(chevronId);
+      const isHidden = body.classList.contains('hidden');
+      if (isHidden) {
+        body.classList.remove('hidden');
+        chevron.textContent = '▼';
+      } else {
+        body.classList.add('hidden');
+        chevron.textContent = '▶';
+      }
+    }
+
+    function scrollToConsultant() {
+      document.getElementById('ai-consultant-section').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('consultant-input').focus();
+    }
+
+    function openSnapshotModalById(offerId) {
+      const item = offersCatalog.find(o => o.id === offerId);
+      if (!item) return;
+      const m = computeDropMetrics(item);
+      document.getElementById('modal-title').textContent = item.title;
+      document.getElementById('modal-store').textContent = `${item.store} (${item.sellerLabel})`;
+      document.getElementById('modal-window-label').textContent = `Menor preço na janela (${m.days}d):`;
+      document.getElementById('modal-period-low').textContent = formatBRL(m.periodLow);
+      document.getElementById('modal-price').textContent = formatBRL(item.finalPricePix);
+      document.getElementById('modal-drop-badge').innerHTML = m.isMajorDrop
+        ? `<span class="badge-drop-alert px-2 py-0.5 rounded text-xs">QUEDA ${m.pctFormatted} (≥ 10% OFF)</span>`
+        : `<span class="text-[#D6D3D1]">${m.pctFormatted} vs piso de ${m.days}d</span>`;
+      document.getElementById('modal-installments').textContent = item.installments;
+      document.getElementById('modal-notes').textContent =
+        `${item.coupon ? `Cupom disponível: ${item.coupon.toUpperCase()} · ` : ''}${item.upgradeNotes}`;
+      document.getElementById('modal-store-link').href = item.storeUrl;
+      document.getElementById('snapshot-modal').classList.remove('hidden');
+    }
+
+    function closeSnapshotModal() {
+      document.getElementById('snapshot-modal').classList.add('hidden');
+    }
+
+    function openMemoryModal() {
+      const listEl = document.getElementById('memory-modal-list');
+      listEl.innerHTML = offersCatalog.map(item => {
+        const m = computeDropMetrics(item);
+        return `
+          <div class="py-2.5 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="font-bold text-white truncate">${item.store} — ${item.title}</div>
+              <div class="text-[11px] text-[#A8A29E] mt-0.5">
+                Pisos: 7d <strong class="text-white">${formatBRL(item.lows[7])}</strong> ·
+                15d <strong class="text-white">${formatBRL(item.lows[15])}</strong> ·
+                21d <strong class="text-white">${formatBRL(item.lows[21])}</strong> ·
+                30d <strong class="text-white">${formatBRL(item.lows[30])}</strong> ·
+                Atual: <strong class="text-[#FCA5A5]">${formatBRL(item.finalPricePix)}</strong>
+              </div>
+            </div>
+            <div class="shrink-0">
+              ${m.isMajorDrop
+                ? `<span class="badge-drop-alert px-2 py-0.5 rounded text-[11px] font-extrabold">${m.pctFormatted} (${m.days}d)</span>`
+                : `<span class="text-[#A8A29E] font-medium">${m.pctFormatted}</span>`}
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('memory-modal').classList.remove('hidden');
+    }
+
+    function closeMemoryModal() {
+      document.getElementById('memory-modal').classList.add('hidden');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3800);
+    }
+
+    function copyCoupon(code) {
+      const tempInput = document.createElement('input');
+      tempInput.value = code;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast(`Cupom ${code} copiado para a área de transferência!`);
+    }
+
+    function simulateLiveScan() {
+      const icon = document.getElementById('refresh-icon');
+      const btn = document.getElementById('btn-refresh');
+      icon.classList.add('animate-spin');
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const candidates = offersCatalog.filter(o => !computeDropMetrics(o).isMajorDrop);
+        if (candidates.length > 0) {
+          const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+          const baseLow = chosen.lows[filterState.lookbackDays];
+          const newPrice = Math.round(baseLow * 0.875); // 12.5% drop below selected window low
+          chosen.finalPricePix = newPrice;
+          chosen.history30d.push(newPrice);
+          savePriceMemory();
+          applyAllFilters();
+          showToast(`Nova queda ≥ 10% detectada: ${chosen.store} baixou ${chosen.gpuLabel} para ${formatBRL(newPrice)}!`);
+        } else {
+          showToast('Varredura concluída: todas as oportunidades ≥ 10% já estão destacadas no topo.');
+        }
+
+        icon.classList.remove('animate-spin');
+        btn.disabled = false;
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('last-updated-text').textContent =
+          `24/11/2026 às ${hh}:${mm} · 9 lojas oficiais e varejistas conceituados monitorados · preço à vista no Pix`;
+      }, 650);
+    }
+
+    function setPrompt(text) {
+      document.getElementById('consultant-input').value = text;
+      askConsultant();
+    }
+
+    function analyzeSingleOffer(offerId) {
+      const item = offersCatalog.find(o => o.id === offerId);
+      if (!item) return;
+      const m = computeDropMetrics(item);
+      scrollToConsultant();
+      const prompt = `Analise o custo-benefício desta oferta: "${item.title}" por ${formatBRL(item.finalPricePix)} na ${item.store} (menor preço nos últimos ${m.days} dias: ${formatBRL(m.periodLow)}, variação ${m.pctFormatted}). Avalie gargalos (CPU vs GPU), capacidade de upgrade (${item.upgradeNotes}) e diga se vale comprar agora.`;
+      document.getElementById('consultant-input').value = prompt;
+      askConsultant(item);
+    }
+
+    async function askConsultant(specificOffer = null) {
+      const inputEl = document.getElementById('consultant-input');
+      const outputEl = document.getElementById('consultant-output');
+      const btnEl = document.getElementById('btn-ask-ai');
+      const userQuestion = inputEl.value.trim();
+
+      if (!userQuestion) {
+        showToast('Digite sua dúvida ou clique em "✦ Analisar custo-benefício" em uma oferta.');
+        return;
+      }
+
+      const currentlyFiltered = getFilteredOffers();
+
+      btnEl.disabled = true;
+      btnEl.textContent = 'Analisando...';
+      outputEl.innerHTML = `<span class="text-[#FF4D4D] animate-pulse font-semibold">Analisando especificações técnicas, piso de ${filterState.lookbackDays} dias e gargalos das ${currentlyFiltered.length} ofertas filtradas...</span>`;
+
+      const filteredSummaryForAI = currentlyFiltered.slice(0, 10).map(o => {
+        const m = computeDropMetrics(o);
+        return {
+          loja: o.store,
+          categoria: o.category,
+          modelo: o.title,
+          precoPixAtual: o.finalPricePix,
+          menorPrecoJanela: m.periodLow,
+          diasJanela: m.days,
+          variacao: m.pctFormatted,
+          quedaMaiorOuIgual10: m.isMajorDrop,
+          gpu: o.gpuLabel,
+          cpu: o.cpuLabel,
+          ram: o.ramLabel,
+          ssd: o.ssdLabel,
+          notasUpgrade: o.upgradeNotes
+        };
+      });
+
+      const systemPrompt = `Você é um engenheiro especialista em hardware, notebooks gamer e PCs gamer no Brasil. Responda em português (pt-BR) de forma direta, técnica e prática (máximo 6 linhas), usando tags HTML simples como <strong> e <br/> para legibilidade. Destaque se o produto teve queda >= 10% na janela selecionada, avalie equilíbrio CPU/GPU, RAM e upgrades.`;
+
+      const fullPrompt = `Ofertas atualmente filtradas pelo usuário:\n${JSON.stringify(filteredSummaryForAI)}\n\nPergunta do comprador: ${userQuestion}`;
+
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [{ parts: [{ text: fullPrompt }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] }
+      };
+
+      let replyText = null;
+      const delays = [1000, 2000, 4000];
+
+      for (let attempt = 0; attempt <= delays.length; attempt++) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          const result = await response.json();
+          const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) {
+            replyText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+            break;
+          }
+        } catch (err) {
+          if (attempt < delays.length) {
+            await new Promise(r => setTimeout(r, delays[attempt]));
+          }
+        }
+      }
+
+      if (!replyText) {
+        if (specificOffer) {
+          const m = computeDropMetrics(specificOffer);
+          replyText = `<strong>Análise Técnica — ${specificOffer.store} (${formatBRL(specificOffer.finalPricePix)}):</strong><br/>` +
+            `• <strong>Histórico (${m.days} dias):</strong> Menor preço anterior no período era <strong>${formatBRL(m.periodLow)}</strong> (${m.isMajorDrop ? `<span class="text-[#FF4D4D] font-bold">QUEDA RECORDE DE ${m.pctFormatted}</span>` : m.pctFormatted}).<br/>` +
+            `• <strong>Equilíbrio CPU/GPU:</strong> O conjunto <strong>${specificOffer.cpuLabel} + ${specificOffer.gpuLabel}</strong> entrega ótima estabilidade em ${specificOffer.tier === 'high' ? 'QHD (1440p) Alto/Ultra' : 'Full HD (1080p)'}.<br/>` +
+            `• <strong>Memória & Upgrades:</strong> ${specificOffer.upgradeNotes}`;
+        } else {
+          const drops = currentlyFiltered.filter(o => computeDropMetrics(o).isMajorDrop);
+          if (drops.length > 0) {
+            const topDrop = drops[0];
+            const m = computeDropMetrics(topDrop);
+            replyText = `<strong>Oportunidades com queda ≥ 10% nos últimos ${m.days} dias (${drops.length} encontradas):</strong><br/>` +
+              `• Destaque principal: <strong>${topDrop.title}</strong> na <strong>${topDrop.store}</strong>, caindo de <strong>${formatBRL(m.periodLow)}</strong> para <strong>${formatBRL(topDrop.finalPricePix)}</strong> (${m.pctFormatted}).<br/>` +
+              `• <strong>Veredito:</strong> ${topDrop.upgradeNotes} Compra imediata altamente recomendada enquanto durar o estoque.`;
+          } else if (currentlyFiltered.length >= 2) {
+            const top1 = currentlyFiltered[0];
+            const top2 = currentlyFiltered[1];
+            replyText = `<strong>Comparativo das 2 ofertas mais baratas nos seus filtros atuais:</strong><br/>` +
+              `1. <strong>${top1.store} (${formatBRL(top1.finalPricePix)}):</strong> ${top1.cpuLabel} + ${top1.gpuLabel} (${top1.ram}, ${top1.ssd}).<br/>` +
+              `2. <strong>${top2.store} (${formatBRL(top2.finalPricePix)}):</strong> ${top2.cpuLabel} + ${top2.gpuLabel} (${top2.ram}, ${top2.ssd}).<br/>` +
+              `<strong>Recomendação:</strong> Diferença de <strong>${formatBRL(Math.abs(top2.finalPricePix - top1.finalPricePix))}</strong>. ${top1.ram === '8GB' && top2.ram !== '8GB' ? `Vale investir na 2ª opção para já levar <strong>${top2.ram}</strong> em dual-channel.` : `A 1ª opção entrega o menor custo por frame.`}`;
+          } else {
+            replyText = `<strong>Aviso:</strong> Ajuste os filtros multi-seleção acima ou clique em <strong>"Simular Nova Coleta"</strong> no topo para testar alertas de queda em tempo real.`;
+          }
+        }
+      }
+
+      outputEl.innerHTML = replyText;
+      btnEl.disabled = false;
+      btnEl.textContent = 'Consultar IA';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPriceMemory();
+      updatePriceLabel();
+      syncChipVisuals();
+      setLookbackDays(30);
+    });
+  </script>
+</body>
+</html>
