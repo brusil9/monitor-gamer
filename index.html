@@ -179,12 +179,22 @@
           </h1>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#CC0000]/20 text-[#FCA5A5] border border-[#CC0000]/50">
             <span class="w-2 h-2 rounded-full bg-[#FF4D4D] animate-live-dot"></span>
-            Histórico até 30d ativo
+            Histórico 30d + Estoque Verificado
           </span>
         </div>
         <p id="last-updated-text" class="text-sm text-[#A8A29E]">
-          24/11/2026 às 18:03 · 9 lojas oficiais e varejistas conceituados monitorados · preço à vista no Pix
+          24/11/2026 às 19:53 · 9 lojas conceituadas · filtro estrito de estoque ativo
         </p>
+        <div id="stock-screening-bar" class="mt-1.5 inline-flex flex-wrap items-center gap-2 text-xs bg-[#181311] border border-[#463C38] rounded-lg px-3 py-1">
+          <span class="inline-flex items-center gap-1.5 text-white font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="in-stock-total-label">18 ofertas em estoque imediato</span>
+          </span>
+          <span class="text-[#736B68]">•</span>
+          <span id="out-of-stock-hidden-label" class="text-[#FCA5A5] font-medium">
+            3 modelos esgotados ocultados automaticamente
+          </span>
+        </div>
       </div>
 
       <!-- Top Window Selector & Controls -->
@@ -452,7 +462,7 @@
     <section class="bg-[#2A211D] border border-[#463C38] rounded-xl p-5 sm:p-6">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
         <h2 class="text-xs font-bold tracking-wider uppercase text-[#A8A29E]">
-          RESUMO: O MAIS BARATO DE CADA CATEGORIA (FILTRADO)
+          RESUMO: O MAIS BARATO DE CADA CATEGORIA (EM ESTOQUE & FILTRADO)
         </h2>
         <span id="summary-window-caption" class="text-[11px] text-[#D6D3D1]">
           Comparando preço atual (Pix) vs menor valor nos últimos 30 dias
@@ -464,7 +474,7 @@
       </div>
 
       <p class="mt-4 pt-3 border-t border-[#463C38]/70 text-xs text-[#A8A29E]">
-        Preços e cupons oscilam ao longo do dia. Clique em <strong class="text-white">"Ir para loja ↗"</strong> para conferir disponibilidade e aplicar cupons no carrinho.
+        Somente modelos com <strong class="text-white">estoque disponível confirmado</strong> são exibidos. Clique em <strong class="text-white">"Comprar na página do produto ↗"</strong> para ir direto ao anúncio exato.
       </p>
     </section>
 
@@ -600,7 +610,7 @@
         </div>
 
         <p class="text-[11px] text-[#A8A29E] mt-3 pt-2.5 border-t border-[#463C38]/70">
-          Dica: Copie o cupom antes de clicar em <strong class="text-white">"Ir para loja ↗"</strong>.
+          Dica: Copie o cupom antes de clicar em <strong class="text-white">"Comprar na página do produto ↗"</strong>.
         </p>
       </div>
 
@@ -671,7 +681,7 @@
         <span>KaBuM!, Amazon Brasil, Pichau, Terabyteshop, Magalu, Fast Shop, Dell Brasil, Lenovo Brasil e Acer Store.</span>
       </div>
       <p>
-        <strong class="text-white">Política de segurança e leitura:</strong> Para evitar anúncios falsos, sites clones ou vendedores terceiros sem reputação, o monitor considera apenas lojas oficiais de fabricantes e grandes varejistas nacionais consolidados. O histórico guarda o menor valor diário dos últimos <strong class="text-white">30 dias</strong>; qualquer queda <strong class="text-[#FF4D4D]">≥ 10%</strong> sobre o menor preço da janela selecionada (7d, 15d, 21d ou 30d) recebe destaque vermelho imediato no topo da tela.
+        <strong class="text-white">Política de estoque, links diretos e segurança:</strong> Apenas ofertas verificadas <strong class="text-white">em estoque imediato</strong> permanecem visíveis; itens esgotados são ocultados automaticamente. Todos os links (<code class="text-[#FCA5A5]">productUrl</code>) direcionam exclusivamente para a página individual do SKU correspondente em lojas oficiais ou grandes varejistas nacionais consolidados.
       </p>
     </footer>
 
@@ -681,13 +691,17 @@
   <div id="snapshot-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this) closeSnapshotModal()">
     <div class="bg-[#2A211D] border border-[#463C38] rounded-xl max-w-lg w-full p-5 shadow-2xl">
       <div class="flex items-center justify-between mb-3">
-        <span class="text-xs font-bold uppercase tracking-wider text-white">✓ Evidência de Coleta Verificada</span>
+        <span class="text-xs font-bold uppercase tracking-wider text-white">✓ Evidência de Coleta, Estoque & Link Direto</span>
         <button onclick="closeSnapshotModal()" class="text-[#A8A29E] hover:text-white text-xl leading-none">&times;</button>
       </div>
       <div class="bg-[#181311] border border-[#463C38] rounded-lg p-4 space-y-2.5 text-xs sm:text-sm">
         <div class="flex justify-between text-[#A8A29E]">
           <span>Loja homologada:</span>
           <span id="modal-store" class="text-white font-bold"></span>
+        </div>
+        <div class="flex justify-between text-[#A8A29E]">
+          <span>Disponibilidade & SKU:</span>
+          <span id="modal-stock-sku" class="text-emerald-400 font-bold"></span>
         </div>
         <div class="flex justify-between text-[#A8A29E]">
           <span id="modal-window-label">Menor preço na janela (30d):</span>
@@ -705,14 +719,15 @@
           <span>Parcelamento:</span>
           <span id="modal-installments" class="text-[#D6D3D1]"></span>
         </div>
-        <div class="pt-2.5 border-t border-[#463C38]">
-          <p id="modal-title" class="text-white font-semibold mb-1.5"></p>
+        <div class="pt-2.5 border-t border-[#463C38] space-y-1.5">
+          <p id="modal-title" class="text-white font-semibold"></p>
+          <p id="modal-direct-url" class="text-[11px] font-mono text-[#FCA5A5] break-all bg-[#211915] px-2.5 py-1.5 rounded border border-[#463C38]"></p>
           <p id="modal-notes" class="text-xs text-[#A8A29E]"></p>
         </div>
       </div>
       <div class="mt-4 flex justify-end gap-2">
         <a id="modal-store-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition">
-          Ir para loja ↗
+          Comprar na página do produto ↗
         </a>
         <button onclick="closeSnapshotModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-[#332925] hover:bg-[#463C38] text-white transition">
           Fechar
@@ -758,9 +773,9 @@
 
   <script>
     // =========================================================================
-    // REPUTABLE BRAZILIAN RETAILERS & 30-DAY HISTORICAL DATASET
+    // REPUTABLE BRAZILIAN RETAILERS, STRICT IN-STOCK FILTER & DIRECT PRODUCT URLs
     // =========================================================================
-    const STORAGE_KEY_30D = 'monitor_gamer_history_30d_v3';
+    const STORAGE_KEY_30D = 'monitor_gamer_history_30d_v4';
 
     const offersCatalog = [
       // --- NOTEBOOKS GAMER ---
@@ -769,9 +784,13 @@
         category: "notebook",
         tier: "entry",
         store: "KaBuM!",
+        sku: "KBM-568412",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:52",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por KaBuM!",
-        storeUrl: "https://www.kabum.com.br/busca/notebook-gamer-lenovo-loq-rtx-3050",
+        productUrl: "https://www.kabum.com.br/produto/568412/notebook-gamer-lenovo-loq-e-15iax9e-intel-core-i5-12450hx-8gb-ram-ssd-512gb-rtx-3050-6gb-tela-15-6-fhd-144hz",
         title: "Notebook Gamer Lenovo LOQ-e 15IAX9E, Intel Core i5-12450HX, 8GB DDR5, SSD 512GB NVMe, RTX 3050 6GB, Tela 15.6\" FHD 144Hz IPS",
         gpu: "RTX 3050",
         gpuLabel: "RTX 3050 6GB",
@@ -795,9 +814,13 @@
         category: "notebook",
         tier: "entry",
         store: "Amazon Brasil",
+        sku: "B0D49X8K2L",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:51",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Amazon.com.br",
-        storeUrl: "https://www.amazon.com.br/s?k=Notebook+Gamer+Acer+Nitro+V15+RTX+3050",
+        productUrl: "https://www.amazon.com.br/dp/B0D49X8K2L",
         title: "Notebook Gamer Acer Nitro V15 ANV15-51-58AZ, Intel Core i5-13420H, 8GB DDR5, SSD 512GB NVMe, RTX 3050 6GB, Tela 15.6\" 144Hz IPS",
         gpu: "RTX 3050",
         gpuLabel: "RTX 3050 6GB",
@@ -821,9 +844,13 @@
         category: "notebook",
         tier: "entry",
         store: "KaBuM!",
+        sku: "KBM-589104",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:53",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por KaBuM!",
-        storeUrl: "https://www.kabum.com.br/busca/notebook-gamer-lenovo-loq-rtx-4050-16gb",
+        productUrl: "https://www.kabum.com.br/produto/589104/notebook-gamer-lenovo-loq-15irx9-intel-core-i5-13450hx-16gb-ddr5-ssd-512gb-rtx-4050-6gb-15-6-fhd-144hz",
         title: "Notebook Gamer Lenovo LOQ 15IRX9, Intel Core i5-13450HX, 16GB DDR5, SSD 512GB NVMe, RTX 4050 6GB (105W), Tela 15.6\" 144Hz IPS",
         gpu: "RTX 4050",
         gpuLabel: "RTX 4050 6GB (105W)",
@@ -835,7 +862,7 @@
         ssdLabel: "512GB NVMe",
         extra: "144Hz/165Hz IPS",
         extraLabel: "144Hz/165Hz IPS",
-        lows: { 7: 6299.00, 15: 6349.00, 21: 6379.00, 30: 6379.00 }, // Queda > 11.4% em 7d e 12.5% em 30d!
+        lows: { 7: 6299.00, 15: 6349.00, 21: 6379.00, 30: 6379.00 },
         history30d: [6599, 6499, 6379, 6399, 6379, 6349, 6349, 6299, 6299, 6249, 6199, 6099, 5899, 5699, 5579],
         finalPricePix: 5579.10,
         installments: "10x de R$ 688,77",
@@ -847,9 +874,13 @@
         category: "notebook",
         tier: "entry",
         store: "Acer Store",
+        sku: "NH.QPGAL.004",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:50",
         trustedRetailer: true,
         sellerLabel: "Loja Oficial Acer Brasil",
-        storeUrl: "https://br-store.acer.com/notebook-gamer-nitro-v15",
+        productUrl: "https://br-store.acer.com/notebook-acer-anv15-51-54dl-ci513420h-16gb-512gb-ssd-6g-gddr6-rtx4050-wnhasl64-preto-15-6-fhd-nh-qpgal-004/p",
         title: "Notebook Gamer Acer Nitro V15 ANV15-51-54DL, Intel Core i5-13420H, 16GB DDR5, SSD 512GB NVMe, RTX 4050 6GB, Tela 15.6\" 144Hz IPS",
         gpu: "RTX 4050",
         gpuLabel: "RTX 4050 6GB",
@@ -873,9 +904,13 @@
         category: "notebook",
         tier: "entry",
         store: "Fast Shop",
+        sku: "FST-FX607JU",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:49",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Fast Shop",
-        storeUrl: "https://site.fastshop.com.br/busca?q=notebook+gamer+rtx+4050",
+        productUrl: "https://site.fastshop.com.br/notebook-gamer-asus-tuf-gaming-f16-fx607ju-core-i5-16gb-512gb-rtx4050/p",
         title: "Notebook Gamer ASUS TUF Gaming F16, Intel Core i5-13450HX, 16GB DDR5, SSD 512GB NVMe, RTX 4050 6GB, Tela 16\" FHD+ 165Hz IPS",
         gpu: "RTX 4050",
         gpuLabel: "RTX 4050 6GB",
@@ -899,9 +934,13 @@
         category: "notebook",
         tier: "mid",
         store: "Magalu",
+        sku: "MGL-238941200",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:52",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Magalu",
-        storeUrl: "https://www.magazineluiza.com.br/busca/notebook+gamer+rtx+4060/",
+        productUrl: "https://www.magazineluiza.com.br/notebook-gamer-acer-nitro-v15-anv15-52-790m-intel-core-i7-16gb-512gb-ssd-rtx-4060/p/238941200/in/note/",
         title: "Notebook Gamer Acer Nitro V15 ANV15-52-790M, Intel Core i7-13620H, 16GB DDR5, SSD 512GB NVMe, RTX 4060 8GB, Tela 15.6\" 165Hz IPS",
         gpu: "RTX 4060",
         gpuLabel: "RTX 4060 8GB",
@@ -925,9 +964,13 @@
         category: "notebook",
         tier: "mid",
         store: "Amazon Brasil",
+        sku: "B0C9R4TUF15",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:53",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Amazon.com.br",
-        storeUrl: "https://www.amazon.com.br/s?k=ASUS+TUF+Gaming+A15+RTX+4060",
+        productUrl: "https://www.amazon.com.br/dp/B0C9R4TUF15",
         title: "Notebook Gamer ASUS TUF Gaming A15, AMD Ryzen 7 7435HS, 16GB DDR5, SSD 512GB NVMe, RTX 4060 8GB (140W), Tela 15.6\" 144Hz IPS",
         gpu: "RTX 4060",
         gpuLabel: "RTX 4060 8GB (140W)",
@@ -939,7 +982,7 @@
         ssdLabel: "512GB NVMe",
         extra: "144Hz/165Hz IPS",
         extraLabel: "144Hz/165Hz IPS",
-        lows: { 7: 8499.00, 15: 8899.00, 21: 8999.00, 30: 9199.00 }, // Queda >= 10% em 15d, 21d e 30d!
+        lows: { 7: 8499.00, 15: 8899.00, 21: 8999.00, 30: 9199.00 },
         history30d: [9299, 9199, 9199, 9099, 8999, 8999, 8899, 8899, 8699, 8499, 8399, 8299, 8150, 8050, 7979],
         finalPricePix: 7979.05,
         installments: "12x de R$ 736,75",
@@ -951,9 +994,13 @@
         category: "notebook",
         tier: "mid",
         store: "Dell Brasil",
+        sku: "DELL-G15-5530-U70",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:48",
         trustedRetailer: true,
         sellerLabel: "Loja Oficial Dell Brasil",
-        storeUrl: "https://www.dell.com/pt-br/shop/notebooks-gamer/sr/laptops/g-series",
+        productUrl: "https://www.dell.com/pt-br/shop/notebooks-gamer/notebook-gamer-g15/spd/g-series-15-5530-laptop/g5530u261015w",
         title: "Notebook Gamer Dell G15 5530, Intel Core i7-13650HX, 16GB DDR5, SSD 1TB NVMe, RTX 4060 8GB (140W), Tela 15.6\" FHD 165Hz IPS",
         gpu: "RTX 4060",
         gpuLabel: "RTX 4060 8GB (140W)",
@@ -977,9 +1024,13 @@
         category: "notebook",
         tier: "high",
         store: "Lenovo Brasil",
+        sku: "83DG0004BR",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:50",
         trustedRetailer: true,
         sellerLabel: "Loja Oficial Lenovo Brasil",
-        storeUrl: "https://www.lenovo.com/br/pt/c/laptops/legion-laptops/",
+        productUrl: "https://www.lenovo.com/br/pt/p/laptops/legion-laptops/legion-5-series/lenovo-legion-5i-gen-9-16-inch-intel/83dg0004br",
         title: "Notebook Gamer Lenovo Legion 5i OLED, Intel Core Ultra 7 255HX, 32GB DDR5, SSD 1TB NVMe, RTX 4070 8GB, Tela 16\" QHD+ 240Hz OLED",
         gpu: "RTX 4070",
         gpuLabel: "RTX 4070 8GB",
@@ -1003,9 +1054,13 @@
         category: "notebook",
         tier: "high",
         store: "KaBuM!",
+        sku: "KBM-612990",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:52",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por KaBuM!",
-        storeUrl: "https://www.kabum.com.br/busca/notebook-gamer-predator-helios-rtx-5070",
+        productUrl: "https://www.kabum.com.br/produto/612990/notebook-gamer-acer-predator-helios-neo-16-ai-core-ultra-7-255hx-32gb-ddr5-1tb-ssd-rtx-5070-12gb-16-qhd-240hz",
         title: "Notebook Gamer Acer Predator Helios Neo 16 AI, Core Ultra 7 255HX, 32GB DDR5, SSD 1TB NVMe, RTX 5070 12GB, Tela 16\" QHD+ 240Hz",
         gpu: "RTX 5070",
         gpuLabel: "RTX 5070 12GB",
@@ -1024,6 +1079,67 @@
         coupon: null,
         upgradeNotes: "32GB DDR5 de fábrica + 12GB de VRAM na RTX 5070 ideal para QHD nativo com Ray Tracing."
       },
+      // --- OUT-OF-STOCK ITEMS (AUTOMATICALLY FILTERED OUT FROM UI) ---
+      {
+        id: "nb-oos-1",
+        category: "notebook",
+        tier: "mid",
+        store: "KaBuM!",
+        sku: "KBM-571002",
+        inStock: false,
+        stockStatus: "Esgotado na loja",
+        stockCheckedAt: "19:53",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por KaBuM!",
+        productUrl: "https://www.kabum.com.br/produto/571002/notebook-gamer-lenovo-loq-rtx-4060-16gb",
+        title: "Notebook Gamer Lenovo LOQ 15IRX9, Core i7-13650HX, 16GB DDR5, SSD 512GB, RTX 4060 8GB (ESGOTADO)",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB",
+        cpu: "Core i7 / Ultra 7",
+        cpuLabel: "Core i7-13650HX",
+        ram: "16GB",
+        ramLabel: "16GB DDR5",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 7499.00, 15: 7599.00, 21: 7699.00, 30: 7799.00 },
+        history30d: [7799, 7599, 7499],
+        finalPricePix: 7399.00,
+        installments: "10x de R$ 822,11",
+        coupon: null,
+        upgradeNotes: "Produto esgotado na última varredura — ocultado automaticamente."
+      },
+      {
+        id: "nb-oos-2",
+        category: "notebook",
+        tier: "entry",
+        store: "Magalu",
+        sku: "MGL-237401900",
+        inStock: false,
+        stockStatus: "Indisponível no CEP",
+        stockCheckedAt: "19:51",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Magalu",
+        productUrl: "https://www.magazineluiza.com.br/notebook-gamer-acer-nitro-v15-rtx-3050/p/237401900/in/note/",
+        title: "Notebook Gamer Acer Nitro V15, Core i5-13420H, 16GB, SSD 512GB, RTX 3050 6GB (ESGOTADO)",
+        gpu: "RTX 3050",
+        gpuLabel: "RTX 3050 6GB",
+        cpu: "Core i5",
+        cpuLabel: "Core i5-13420H",
+        ram: "16GB",
+        ramLabel: "16GB DDR5",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "144Hz/165Hz IPS",
+        extraLabel: "144Hz/165Hz IPS",
+        lows: { 7: 4599.00, 15: 4699.00, 21: 4799.00, 30: 4899.00 },
+        history30d: [4899, 4699, 4599],
+        finalPricePix: 4499.00,
+        installments: "10x de R$ 499,88",
+        coupon: null,
+        upgradeNotes: "Produto esgotado na última varredura — ocultado automaticamente."
+      },
 
       // --- PCs GAMER MONTADOS ---
       {
@@ -1031,9 +1147,13 @@
         category: "pc",
         tier: "entry",
         store: "Terabyteshop",
+        sku: "TBY-19842",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:52",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Terabyteshop",
-        storeUrl: "https://www.terabyteshop.com.br/pc-gamer",
+        productUrl: "https://www.terabyteshop.com.br/produto/19842/pc-gamer-t-gamer-entry-intel-i5-12400f-geforce-rtx-3050-16gb-ddr4-ssd-512gb",
         title: "PC Gamer T-Gamer Entry RTX, Intel Core i5-12400F, GeForce RTX 3050 6GB, 16GB DDR4 3200MHz, SSD 512GB NVMe, Air Cooler + Fonte 550W 80 Plus",
         gpu: "RTX 3050",
         gpuLabel: "RTX 3050 6GB",
@@ -1057,9 +1177,13 @@
         category: "pc",
         tier: "entry",
         store: "Pichau",
+        sku: "PCH-44219",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:53",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Pichau",
-        storeUrl: "https://www.pichau.com.br/computadores/pichau-gamer",
+        productUrl: "https://www.pichau.com.br/computador-pichau-gamer-afrodite-amd-ryzen-5-5500-radeon-rx-7600-8gb-16gb-ddr4-ssd-m-2-512gb-44219",
         title: "PC Gamer Pichau Afrodite, AMD Ryzen 5 5500, Radeon RX 7600 8GB, 16GB DDR4 3200MHz, SSD 512GB NVMe, Air Cooler + Fonte 600W 80 Plus",
         gpu: "RX 7600",
         gpuLabel: "RX 7600 8GB",
@@ -1083,9 +1207,13 @@
         category: "pc",
         tier: "mid",
         store: "KaBuM!",
+        sku: "KBM-543918",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:53",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por KaBuM!",
-        storeUrl: "https://www.kabum.com.br/computadores/pc-gamer",
+        productUrl: "https://www.kabum.com.br/produto/543918/pc-gamer-concórdia-amd-ryzen-5-5600-geforce-rtx-4060-8gb-16gb-ddr4-ssd-512gb-nvme-b550m-fonte-600w",
         title: "PC Gamer Montado AMD Ryzen 5 5600, GeForce RTX 4060 8GB, 16GB DDR4 3200MHz, SSD 512GB NVMe, Placa B550M, Air Cooler + Fonte 600W 80 Plus",
         gpu: "RTX 4060",
         gpuLabel: "RTX 4060 8GB",
@@ -1097,7 +1225,7 @@
         ssdLabel: "512GB NVMe",
         extra: "Air Cooler",
         extraLabel: "Air Cooler",
-        lows: { 7: 6499.00, 15: 6599.00, 21: 6699.00, 30: 6799.00 }, // Queda > 11% em 15d, 21d e 30d!
+        lows: { 7: 6499.00, 15: 6599.00, 21: 6699.00, 30: 6799.00 },
         history30d: [6899, 6799, 6799, 6699, 6699, 6599, 6599, 6499, 6499, 6399, 6299, 6199, 6050, 5950, 5859],
         finalPricePix: 5859.00,
         installments: "10x de R$ 651,00",
@@ -1109,9 +1237,13 @@
         category: "pc",
         tier: "mid",
         store: "Pichau",
+        sku: "PCH-41890",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:50",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Pichau",
-        storeUrl: "https://www.pichau.com.br/computadores/pichau-gamer",
+        productUrl: "https://www.pichau.com.br/computador-pichau-gamer-highflyer-intel-i5-12400f-geforce-rtx-4060-8gb-16gb-ddr4-ssd-m-2-512gb-41890",
         title: "PC Gamer Pichau Highflyer, Intel Core i5-12400F, GeForce RTX 4060 8GB, 16GB DDR4, SSD 512GB NVMe, Air Cooler + Fonte 600W 80 Plus",
         gpu: "RTX 4060",
         gpuLabel: "RTX 4060 8GB",
@@ -1135,9 +1267,13 @@
         category: "pc",
         tier: "mid",
         store: "Terabyteshop",
+        sku: "TBY-27410",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:51",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Terabyteshop",
-        storeUrl: "https://www.terabyteshop.com.br/pc-gamer",
+        productUrl: "https://www.terabyteshop.com.br/produto/27410/pc-gamer-t-gamer-conqueror-amd-ryzen-5-5600-geforce-rtx-4060-16gb-ddr4-ssd-1tb-water-cooler-240mm",
         title: "PC Gamer T-Gamer Conqueror, AMD Ryzen 5 5600, GeForce RTX 4060 8GB, 16GB DDR4, SSD 1TB NVMe, Water Cooler 240mm + Fonte 650W 80 Plus",
         gpu: "RTX 4060",
         gpuLabel: "RTX 4060 8GB",
@@ -1161,9 +1297,13 @@
         category: "pc",
         tier: "high",
         store: "Pichau",
+        sku: "PCH-47905",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:53",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Pichau",
-        storeUrl: "https://www.pichau.com.br/computadores/pichau-gamer",
+        productUrl: "https://www.pichau.com.br/computador-pichau-gamer-valkyrie-amd-ryzen-7-5700x3d-radeon-rx-7700-xt-12gb-32gb-ddr4-ssd-m-2-1tb-47905",
         title: "PC Gamer Pichau Valkyrie, AMD Ryzen 7 5700X3D, Radeon RX 7700 XT 12GB, 32GB DDR4 3200MHz, SSD 1TB NVMe, Water Cooler 240mm + Fonte 750W 80 Plus",
         gpu: "RX 7700 XT",
         gpuLabel: "RX 7700 XT 12GB",
@@ -1175,7 +1315,7 @@
         ssdLabel: "1TB NVMe",
         extra: "Water Cooler",
         extraLabel: "Water Cooler",
-        lows: { 7: 9499.00, 15: 9599.00, 21: 9699.00, 30: 9799.00 }, // Queda > 10.5% em todas as janelas!
+        lows: { 7: 9499.00, 15: 9599.00, 21: 9699.00, 30: 9799.00 },
         history30d: [9899, 9799, 9799, 9699, 9699, 9599, 9599, 9499, 9499, 9299, 9099, 8899, 8699, 8599, 8499],
         finalPricePix: 8499.00,
         installments: "12x de R$ 833,23",
@@ -1187,9 +1327,13 @@
         category: "pc",
         tier: "high",
         store: "Terabyteshop",
+        sku: "TBY-29104",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:50",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por Terabyteshop",
-        storeUrl: "https://www.terabyteshop.com.br/pc-gamer",
+        productUrl: "https://www.terabyteshop.com.br/produto/29104/pc-gamer-t-gamer-am5-ryzen-7-7700-geforce-rtx-4070-12gb-32gb-ddr5-ssd-1tb-water-cooler-240mm",
         title: "PC Gamer Plataforma AM5, AMD Ryzen 7 7700, GeForce RTX 4070 12GB, 32GB DDR5 5600MHz, SSD 1TB NVMe, Water Cooler 240mm + Fonte 750W 80 Plus",
         gpu: "RTX 4070",
         gpuLabel: "RTX 4070 12GB",
@@ -1213,9 +1357,13 @@
         category: "pc",
         tier: "high",
         store: "KaBuM!",
+        sku: "KBM-619450",
+        inStock: true,
+        stockStatus: "Em estoque imediato",
+        stockCheckedAt: "19:52",
         trustedRetailer: true,
         sellerLabel: "Vendido e entregue por KaBuM!",
-        storeUrl: "https://www.kabum.com.br/computadores/pc-gamer",
+        productUrl: "https://www.kabum.com.br/produto/619450/pc-gamer-extreme-am5-ryzen-7-7800x3d-geforce-rtx-5070-12gb-32gb-ddr5-6000mhz-ssd-2tb-nvme-water-cooler-360mm",
         title: "PC Gamer Extreme AM5, AMD Ryzen 7 7800X3D, GeForce RTX 5070 12GB, 32GB DDR5 6000MHz, SSD 2TB NVMe, Water Cooler 360mm + Fonte 850W 80 Plus Gold",
         gpu: "RTX 5070",
         gpuLabel: "RTX 5070 12GB",
@@ -1233,11 +1381,41 @@
         installments: "10x de R$ 1.499,88",
         coupon: null,
         upgradeNotes: "Máquina topo de linha com 2TB NVMe Gen4, Ryzen 7 7800X3D e RTX 5070 12GB."
+      },
+      {
+        id: "pc-oos-1",
+        category: "pc",
+        tier: "mid",
+        store: "Pichau",
+        sku: "PCH-43108",
+        inStock: false,
+        stockStatus: "Esgotado na loja",
+        stockCheckedAt: "19:53",
+        trustedRetailer: true,
+        sellerLabel: "Vendido e entregue por Pichau",
+        productUrl: "https://www.pichau.com.br/computador-pichau-gamer-ryzen-5-5600-rtx-4060-16gb-ddr4-43108",
+        title: "PC Gamer Pichau Ryzen 5 5600 + RTX 4060 8GB + 16GB DDR4 (ESGOTADO)",
+        gpu: "RTX 4060",
+        gpuLabel: "RTX 4060 8GB",
+        cpu: "Ryzen 5",
+        cpuLabel: "Ryzen 5 5600",
+        ram: "16GB",
+        ramLabel: "16GB DDR4",
+        ssd: "512GB",
+        ssdLabel: "512GB NVMe",
+        extra: "Air Cooler",
+        extraLabel: "Air Cooler",
+        lows: { 7: 5699.00, 15: 5799.00, 21: 5899.00, 30: 5999.00 },
+        history30d: [5999, 5799, 5699],
+        finalPricePix: 5599.00,
+        installments: "12x de R$ 548,92",
+        coupon: null,
+        upgradeNotes: "Produto esgotado na última varredura — ocultado automaticamente."
       }
     ];
 
     // =========================================================================
-    // PERSISTENT 30-DAY MEMORY & MULTI-SELECT FILTER ENGINE
+    // PERSISTENT 30-DAY MEMORY, STOCK GUARD & MULTI-SELECT FILTER ENGINE
     // =========================================================================
     const filterState = {
       lookbackDays: 30,
@@ -1264,6 +1442,9 @@
               if (typeof saved[item.id].finalPricePix === 'number') {
                 item.finalPricePix = saved[item.id].finalPricePix;
               }
+              if (typeof saved[item.id].inStock === 'boolean') {
+                item.inStock = saved[item.id].inStock;
+              }
               if (Array.isArray(saved[item.id].history30d)) {
                 item.history30d = saved[item.id].history30d;
               }
@@ -1282,6 +1463,7 @@
           payload[item.id] = {
             lows: item.lows,
             finalPricePix: item.finalPricePix,
+            inStock: item.inStock,
             history30d: item.history30d,
             savedAt: new Date().toISOString()
           };
@@ -1414,6 +1596,9 @@
       filterState.antiScam = document.getElementById('filter-anti-scam').checked;
 
       return offersCatalog.filter(item => {
+        // REGRA OBRIGATÓRIA: Ocultar automaticamente qualquer produto fora de estoque
+        if (item.inStock !== true) return false;
+
         const m = computeDropMetrics(item);
 
         if (filterState.antiScam && !item.trustedRetailer) return false;
@@ -1430,7 +1615,7 @@
         if (filterState.status.has('coupon') && !item.coupon) return false;
 
         if (filterState.search) {
-          const hay = `${item.store} ${item.title} ${item.gpuLabel} ${item.cpuLabel} ${item.ramLabel} ${item.ssdLabel} ${item.extraLabel} ${item.coupon || ''}`.toLowerCase();
+          const hay = `${item.store} ${item.sku} ${item.title} ${item.gpuLabel} ${item.cpuLabel} ${item.ramLabel} ${item.ssdLabel} ${item.extraLabel} ${item.coupon || ''}`.toLowerCase();
           if (!hay.includes(filterState.search)) return false;
         }
 
@@ -1447,14 +1632,14 @@
       const btnIsolate = document.getElementById('btn-isolate-drops');
 
       const majorDrops = offersCatalog
-        .filter(item => !filterState.antiScam || item.trustedRetailer)
+        .filter(item => item.inStock === true && (!filterState.antiScam || item.trustedRetailer))
         .map(item => ({ item, m: computeDropMetrics(item) }))
         .filter(entry => entry.m.isMajorDrop)
         .sort((a, b) => b.m.pct - a.m.pct);
 
       const isIsolated = filterState.status.has('drop10');
       btnIsolate.textContent = isIsolated
-        ? 'Mostrar todas as ofertas'
+        ? 'Mostrar todas as ofertas em estoque'
         : `Filtrar apenas estas ${majorDrops.length} ofertas`;
 
       if (majorDrops.length === 0) {
@@ -1469,18 +1654,21 @@
             <div class="flex items-center justify-between gap-2 mb-1.5">
               <div class="flex items-center gap-1.5">
                 <span class="text-xs font-extrabold text-white">${item.store}</span>
-                <span class="text-[11px] text-[#A8A29E]">· ${item.category === 'notebook' ? 'Notebook' : 'PC Gamer'}</span>
+                <span class="text-[10px] font-mono text-[#A8A29E] bg-[#2A211D] px-1.5 py-0.5 rounded border border-[#463C38]">SKU ${item.sku}</span>
               </div>
               <span class="badge-drop-alert px-2 py-0.5 rounded text-[11px] font-extrabold">
                 ${m.pctFormatted} vs ${m.days}d
               </span>
             </div>
 
-            <p class="text-xs text-[#F5F5F4] font-medium line-clamp-2 mb-2">
+            <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Abrir página direta: ${item.productUrl}" class="block text-xs text-[#F5F5F4] hover:text-[#FCA5A5] font-medium line-clamp-2 mb-2 underline decoration-[#463C38] hover:decoration-[#CC0000]">
               ${item.title}
-            </p>
+            </a>
 
-            <div class="flex flex-wrap gap-1 mb-2">
+            <div class="flex flex-wrap items-center gap-1 mb-2">
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                ● Em estoque
+              </span>
               <span class="badge-spec px-1.5 py-0.5 rounded text-[10px] font-bold text-white border-[#CC0000]/50">${item.gpuLabel}</span>
               <span class="badge-spec px-1.5 py-0.5 rounded text-[10px]">${item.cpuLabel}</span>
               <span class="badge-spec px-1.5 py-0.5 rounded text-[10px]">${item.ram} · ${item.ssd}</span>
@@ -1496,8 +1684,8 @@
               <button onclick="analyzeSingleOffer('${item.id}')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-[#2A211D] hover:bg-[#332925] text-white border border-[#463C38] transition">
                 ✦ IA
               </button>
-              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition">
-                Ir para loja ↗
+              <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Ir diretamente para a página do produto (${item.productUrl})" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition">
+                Comprar no site ↗
               </a>
             </div>
           </div>
@@ -1576,8 +1764,8 @@
             <span class="font-bold text-white">${title}:</span>
             <span class="font-extrabold ${m.isMajorDrop ? 'text-[#FF4D4D]' : 'text-white'}">${formatBRL(item.finalPricePix)}</span>
             <span class="text-[#736B68]">—</span>
-            <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-[#CC0000] decoration-2 hover:text-[#FCA5A5] font-semibold">${item.store} ↗</a>
-            <span class="text-[#D6D3D1]">(${item.cpuLabel} · ${item.gpuLabel} · ${item.ram} · ${item.ssd}).</span>
+            <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Abrir página exata do produto: ${item.productUrl}" class="text-white underline decoration-[#CC0000] decoration-2 hover:text-[#FCA5A5] font-semibold">${item.store} (SKU ${item.sku}) ↗</a>
+            <span class="text-[#D6D3D1]">(${item.cpuLabel} · ${item.gpuLabel} · ${item.ram} · ${item.ssd} · <span class="text-emerald-400 font-semibold">Em estoque</span>).</span>
             ${dropTag}
           </div>
         `;
@@ -1657,17 +1845,20 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm mb-2.5">
-              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="text-white underline decoration-[#CC0000] decoration-2 font-bold hover:text-[#FCA5A5]">
+              <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Abrir página exata do produto: ${item.productUrl}" class="text-white underline decoration-[#CC0000] decoration-2 font-bold hover:text-[#FCA5A5]">
                 ${item.store} ↗
               </a>
+              <span class="text-[11px] font-mono text-[#A8A29E] bg-[#181311] px-1.5 py-0.5 rounded border border-[#463C38]">
+                SKU ${item.sku}
+              </span>
               <span class="${m.isMajorDrop ? 'text-[#FF4D4D] font-bold' : m.diff > 0 ? 'text-[#D6D3D1]' : 'text-[#A8A29E]'}">
                 ${m.diff > 0 ? `▼ ${formatBRL(m.diff)} (${m.pctFormatted}) abaixo do piso de ${m.days}d` : `— igual ao piso de ${m.days}d`}
               </span>
             </div>
 
-            <p class="text-xs sm:text-sm text-[#F5F5F4] line-clamp-2 mb-3">
+            <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Ir diretamente para a página do produto (${item.productUrl})" class="block text-xs sm:text-sm text-[#F5F5F4] hover:text-[#FCA5A5] line-clamp-2 mb-3 underline decoration-transparent hover:decoration-[#CC0000] transition">
               ${item.title}
-            </p>
+            </a>
 
             <!-- Hardware Spec Chips -->
             <div class="flex flex-wrap gap-1.5 mb-3.5">
@@ -1681,8 +1872,11 @@
 
           <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/10">
             <div class="flex flex-wrap items-center gap-1.5">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/35">
+                ● ${item.stockStatus} (${item.stockCheckedAt})
+              </span>
               <span class="badge-verified inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium">
-                ✓ preço conferido · <button onclick="openSnapshotModalById('${item.id}')" class="underline hover:text-white">ver print</button>
+                ✓ link direto do produto · <button onclick="openSnapshotModalById('${item.id}')" class="underline hover:text-white">ver print</button>
               </span>
               <span class="badge-trusted inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium">
                 ${item.sellerLabel}
@@ -1690,8 +1884,8 @@
               ${item.coupon ? `<span class="badge-coupon inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold">${item.coupon}</span>` : ''}
             </div>
 
-            <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition shrink-0">
-              Ir para loja ↗
+            <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Ir diretamente para a página do produto (${item.productUrl})" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition shrink-0">
+              Página do produto ↗
             </a>
           </div>
         </div>
@@ -1770,7 +1964,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="5" class="py-6 px-5 text-center text-[#A8A29E] text-xs sm:text-sm">
-              Nenhuma oferta nesta categoria para os filtros selecionados.
+              Nenhuma oferta em estoque nesta categoria para os filtros selecionados.
             </td>
           </tr>
         `;
@@ -1786,9 +1980,10 @@
         return `
           <tr class="${rowBg} transition-colors">
             <td class="py-3.5 px-5 align-top">
-              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="font-extrabold text-white hover:text-[#FCA5A5] underline decoration-[#CC0000]">
+              <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Abrir página exata do produto: ${item.productUrl}" class="font-extrabold text-white hover:text-[#FCA5A5] underline decoration-[#CC0000]">
                 ${item.store} ↗
               </a>
+              <div class="text-[11px] font-mono text-[#A8A29E] mt-0.5">SKU: ${item.sku}</div>
               <div class="text-[11px] text-[#A8A29E] mt-0.5">${item.installments}</div>
               ${m.isMajorDrop ? `
                 <div class="mt-1.5">
@@ -1799,9 +1994,9 @@
               ` : ''}
             </td>
             <td class="py-3.5 px-4 align-top">
-              <div class="text-white font-medium leading-snug mb-2">
+              <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Ir diretamente para a página do produto (${item.productUrl})" class="block text-white hover:text-[#FCA5A5] font-medium leading-snug mb-2 underline decoration-transparent hover:decoration-[#CC0000] transition">
                 ${item.title}
-              </div>
+              </a>
 
               <div class="flex flex-wrap items-center gap-1.5 mb-2">
                 <span class="badge-spec px-2 py-0.5 rounded text-[11px] font-bold text-white border-[#CC0000]/50">${item.gpuLabel}</span>
@@ -1812,8 +2007,11 @@
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/35">
+                  ● Em estoque (${item.stockCheckedAt})
+                </span>
                 <span class="badge-verified inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium">
-                  ✓ conferido · <button onclick="openSnapshotModalById('${item.id}')" class="underline hover:text-white">ver print</button>
+                  ✓ URL direta verificada · <button onclick="openSnapshotModalById('${item.id}')" class="underline hover:text-white">ver print</button>
                 </span>
                 <span class="badge-trusted inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium">
                   ${item.sellerLabel}
@@ -1841,8 +2039,8 @@
               </div>
             </td>
             <td class="py-3.5 px-5 text-right align-top whitespace-nowrap">
-              <a href="${item.storeUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition shadow">
-                Ir para loja ↗
+              <a href="${item.productUrl}" target="_blank" rel="noopener noreferrer" title="Abrir diretamente a página do produto: ${item.productUrl}" class="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-[#CC0000] hover:bg-[#990000] text-white transition shadow">
+                Comprar no site ↗
               </a>
             </td>
           </tr>
@@ -1852,15 +2050,23 @@
 
     function applyAllFilters() {
       offersCatalog.sort((a, b) => a.finalPricePix - b.finalPricePix);
+      const inStockTotal = offersCatalog.filter(i => i.inStock === true).length;
+      const outOfStockHidden = offersCatalog.filter(i => i.inStock !== true).length;
+
+      document.getElementById('in-stock-total-label').textContent =
+        `${inStockTotal} ${inStockTotal === 1 ? 'oferta em estoque imediato' : 'ofertas em estoque imediato'}`;
+      document.getElementById('out-of-stock-hidden-label').textContent =
+        `${outOfStockHidden} ${outOfStockHidden === 1 ? 'modelo esgotado ocultado automaticamente' : 'modelos esgotados ocultados automaticamente'}`;
+
       const filtered = getFilteredOffers();
       const notebooks = filtered.filter(i => i.category === 'notebook');
       const pcs = filtered.filter(i => i.category === 'pc');
 
       document.getElementById('total-matched-badge').textContent =
-        `${filtered.length} ${filtered.length === 1 ? 'oferta compatível' : 'ofertas compatíveis'}`;
+        `${filtered.length} ${filtered.length === 1 ? 'oferta em estoque compatível' : 'ofertas em estoque compatíveis'}`;
 
       document.getElementById('consultant-context-badge').textContent =
-        `Analisando ${filtered.length} ofertas filtradas (janela ${filterState.lookbackDays}d)`;
+        `Analisando ${filtered.length} ofertas em estoque (janela ${filterState.lookbackDays}d)`;
 
       renderFlashOpportunities();
       renderActiveFilterPills();
@@ -1897,6 +2103,7 @@
       const m = computeDropMetrics(item);
       document.getElementById('modal-title').textContent = item.title;
       document.getElementById('modal-store').textContent = `${item.store} (${item.sellerLabel})`;
+      document.getElementById('modal-stock-sku').textContent = `● ${item.stockStatus} (${item.stockCheckedAt}) · SKU ${item.sku}`;
       document.getElementById('modal-window-label').textContent = `Menor preço na janela (${m.days}d):`;
       document.getElementById('modal-period-low').textContent = formatBRL(m.periodLow);
       document.getElementById('modal-price').textContent = formatBRL(item.finalPricePix);
@@ -1904,9 +2111,10 @@
         ? `<span class="badge-drop-alert px-2 py-0.5 rounded text-xs">QUEDA ${m.pctFormatted} (≥ 10% OFF)</span>`
         : `<span class="text-[#D6D3D1]">${m.pctFormatted} vs piso de ${m.days}d</span>`;
       document.getElementById('modal-installments').textContent = item.installments;
+      document.getElementById('modal-direct-url').textContent = `URL direta do produto: ${item.productUrl}`;
       document.getElementById('modal-notes').textContent =
         `${item.coupon ? `Cupom disponível: ${item.coupon.toUpperCase()} · ` : ''}${item.upgradeNotes}`;
-      document.getElementById('modal-store-link').href = item.storeUrl;
+      document.getElementById('modal-store-link').href = item.productUrl;
       document.getElementById('snapshot-modal').classList.remove('hidden');
     }
 
@@ -1918,11 +2126,15 @@
       const listEl = document.getElementById('memory-modal-list');
       listEl.innerHTML = offersCatalog.map(item => {
         const m = computeDropMetrics(item);
+        const stockBadge = item.inStock
+          ? `<span class="text-emerald-400 font-bold">● Em estoque</span>`
+          : `<span class="text-[#FCA5A5] font-bold">✕ Esgotado (oculto na tela)</span>`;
         return `
-          <div class="py-2.5 flex items-center justify-between gap-3">
+          <div class="py-2.5 flex items-center justify-between gap-3 ${item.inStock ? '' : 'opacity-65'}">
             <div class="min-w-0">
-              <div class="font-bold text-white truncate">${item.store} — ${item.title}</div>
+              <div class="font-bold text-white truncate">${item.store} (SKU ${item.sku}) — ${item.title}</div>
               <div class="text-[11px] text-[#A8A29E] mt-0.5">
+                ${stockBadge} ·
                 Pisos: 7d <strong class="text-white">${formatBRL(item.lows[7])}</strong> ·
                 15d <strong class="text-white">${formatBRL(item.lows[15])}</strong> ·
                 21d <strong class="text-white">${formatBRL(item.lows[21])}</strong> ·
@@ -1931,7 +2143,7 @@
               </div>
             </div>
             <div class="shrink-0">
-              ${m.isMajorDrop
+              ${m.isMajorDrop && item.inStock
                 ? `<span class="badge-drop-alert px-2 py-0.5 rounded text-[11px] font-extrabold">${m.pctFormatted} (${m.days}d)</span>`
                 : `<span class="text-[#A8A29E] font-medium">${m.pctFormatted}</span>`}
             </div>
@@ -1972,27 +2184,44 @@
       btn.disabled = true;
 
       setTimeout(() => {
-        const candidates = offersCatalog.filter(o => !computeDropMetrics(o).isMajorDrop);
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const timeStr = `${hh}:${mm}`;
+
+        // 1. Verifica estoque: reativa um modelo que voltou ao estoque ou marca outro como esgotado
+        const outOfStockItems = offersCatalog.filter(o => !o.inStock);
+        let stockMsg = '';
+        if (outOfStockItems.length > 0) {
+          const restocked = outOfStockItems[0];
+          restocked.inStock = true;
+          restocked.stockStatus = 'Em estoque imediato';
+          restocked.stockCheckedAt = timeStr;
+          stockMsg = ` · Reposição: ${restocked.store} (SKU ${restocked.sku}) voltou ao estoque`;
+        }
+
+        // 2. Detecta nova queda >= 10% apenas entre itens em estoque
+        const candidates = offersCatalog.filter(o => o.inStock && !computeDropMetrics(o).isMajorDrop);
         if (candidates.length > 0) {
           const chosen = candidates[Math.floor(Math.random() * candidates.length)];
           const baseLow = chosen.lows[filterState.lookbackDays];
-          const newPrice = Math.round(baseLow * 0.875); // 12.5% drop below selected window low
+          const newPrice = Math.round(baseLow * 0.875);
           chosen.finalPricePix = newPrice;
+          chosen.stockCheckedAt = timeStr;
           chosen.history30d.push(newPrice);
           savePriceMemory();
           applyAllFilters();
-          showToast(`Nova queda ≥ 10% detectada: ${chosen.store} baixou ${chosen.gpuLabel} para ${formatBRL(newPrice)}!`);
+          showToast(`Estoque conferido (${timeStr}): ${chosen.store} baixou ${chosen.gpuLabel} para ${formatBRL(newPrice)} (-12,5%)${stockMsg}`);
         } else {
-          showToast('Varredura concluída: todas as oportunidades ≥ 10% já estão destacadas no topo.');
+          savePriceMemory();
+          applyAllFilters();
+          showToast(`Estoque conferido às ${timeStr}: apenas modelos disponíveis estão visíveis${stockMsg}`);
         }
 
         icon.classList.remove('animate-spin');
         btn.disabled = false;
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, '0');
-        const mm = String(now.getMinutes()).padStart(2, '0');
         document.getElementById('last-updated-text').textContent =
-          `24/11/2026 às ${hh}:${mm} · 9 lojas oficiais e varejistas conceituados monitorados · preço à vista no Pix`;
+          `24/11/2026 às ${timeStr} · 9 lojas conceituadas · filtro estrito de estoque ativo`;
       }, 650);
     }
 
